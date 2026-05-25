@@ -1,0 +1,128 @@
+[
+  {
+    "slug": "ducting-air-cool-pt-wilmar",
+    "title": "Ducting Air Cool untuk Flour Plant",
+    "client": "PT Wilmar Tbk",
+    "industry": "F&B (Flour Plant)",
+    "location": "Gresik Plant",
+    "excerpt": "Instalasi sistem blower Fresh Air dengan unit Air Cool untuk mengatasi suhu ruangan panas di flour plant tanpa mempengaruhi kualitas produk tepung.",
+    "imagePlaceholder": "air_purifier",
+    "imageNote": "Tampilan instalasi ducting (mesin disamarkan sesuai permintaan klien)",
+    "background": "Fasilitas flour plant PT Wilmar Tbk di Gresik menghadapi kendala suhu ruangan yang panas. Pemasangan AC konvensional tidak memungkinkan karena dapat mempengaruhi hasil produk tepung sekaligus membutuhkan konsumsi daya dan biaya operasional yang besar.",
+    "challenges": [
+      "Diperlukan unit pendingin ruangan untuk menurunkan suhu",
+      "Pemasangan AC konvensional berisiko mempengaruhi kualitas produk tepung",
+      "Konsumsi daya dan biaya operasional AC konvensional sangat besar"
+    ],
+    "highlightChallenge": "Suhu ruangan yang panas tidak dapat diatasi dengan AC konvensional tanpa merusak kualitas produk tepung.",
+    "solution": [
+      "Memasang mesin Blower untuk Fresh Air menggunakan unit Air Cool yang sesuai dengan kondisi produksi flour plant"
+    ],
+    "results": [
+      "Suhu ruangan turun hingga 10–20%",
+      "Konsumsi daya listrik lebih hemat dibandingkan sistem refrigran konvensional",
+      "Penghematan biaya operasional mencapai 10–20%"
+    ],
+    "metrics": [
+      {
+        "label": "Penurunan Suhu",
+        "value": "10–20%"
+      },
+      {
+        "label": "Hemat Biaya",
+        "value": "10–20%"
+      },
+      {
+        "label": "Tipe Unit",
+        "value": "Air Cool"
+      },
+      {
+        "label": "Lokasi",
+        "value": "Gresik"
+      }
+    ],
+    "image": "/images/portfolio/ducting-air-cool-pt-wilmar.jpeg"
+  },
+  {
+    "slug": "ducting-chiller-pt-bina-karya-prima",
+    "title": "Ducting Chiller dengan Akses Perawatan Fan",
+    "client": "PT Bina Karya Prima",
+    "industry": "F&B",
+    "location": "Gresik Plant",
+    "excerpt": "Perancangan sistem ducting untuk mengarahkan udara panas unit Chiller keluar gedung, dilengkapi manhole khusus untuk kemudahan perawatan fan.",
+    "imagePlaceholder": "hvac",
+    "background": "PT Bina Karya Prima menghadapi masalah di mana pembuangan udara dari unit Chiller menyebabkan suhu dalam gedung meningkat secara signifikan. Diperlukan solusi ducting yang tidak hanya efektif tetapi juga mempertimbangkan kebutuhan perawatan rutin.",
+    "challenges": [
+      "Diperlukan ducting untuk mengarahkan udara panas keluar gedung",
+      "Desain ducting harus menyediakan akses untuk perawatan Fan unit Chiller"
+    ],
+    "highlightChallenge": "Pada ducting diperlukan akses khusus untuk perawatan Fan unit Chiller tanpa membongkar seluruh instalasi.",
+    "solution": [
+      "Menyediakan manhole pada ducting tepat di atas unit Fan Chiller sehingga mudah diakses oleh teknisi saat perawatan berkala"
+    ],
+    "results": [
+      "Suhu ruangan berhasil turun hingga 20–30%",
+      "Akses perawatan Fan Chiller tersedia tanpa perlu membongkar ducting"
+    ],
+    "metrics": [
+      {
+        "label": "Penurunan Suhu",
+        "value": "20–30%"
+      },
+      {
+        "label": "Fitur",
+        "value": "Manhole Akses"
+      },
+      {
+        "label": "Tipe",
+        "value": "Ducting Chiller"
+      },
+      {
+        "label": "Lokasi",
+        "value": "Gresik"
+      }
+    ],
+    "image": "/images/portfolio/ducting-chiller-pt-bina-karya-prima.jpeg"
+  },
+  {
+    "slug": "dust-collector-chiller-pt-unipack-plasindo",
+    "title": "Dust Collector Chiller untuk Industri Plastik",
+    "client": "PT Unipack Plasindo",
+    "industry": "Plastic & Packaging",
+    "location": "Surabaya",
+    "excerpt": "Solusi Dust Collector khusus pada unit Chiller untuk mengeliminasi polusi debu micro-PVC saat proses cleaning, tanpa mengganggu performa pendinginan.",
+    "imagePlaceholder": "factory",
+    "background": "Unit Chiller milik PT Unipack Plasindo di Surabaya mengalami masalah akumulasi debu micro-PVC yang menempel dan menimbulkan polusi udara setiap kali proses cleaning dilakukan. Kondisi ini membahayakan lingkungan kerja dan tidak memenuhi standar kebersihan industri.",
+    "challenges": [
+      "Penggunaan Dust Collector pada unit Chiller tidak umum digunakan di industri",
+      "Instalasi Dust Collector tidak boleh mengganggu performa dan kapasitas pendinginan Chiller"
+    ],
+    "highlightChallenge": "Tidak boleh ada debu micro-PVC yang berterbangan saat proses cleaning chiller berlangsung.",
+    "solution": [
+      "Memasang Dust Collector dengan perhitungan teknis yang tepat agar kompatibel dengan unit Chiller yang sudah terpasang"
+    ],
+    "results": [
+      "Debu yang berterbangan saat proses cleaning chiller berkurang hingga 95%",
+      "Performa Chiller tetap optimal tanpa penurunan kapasitas pendinginan"
+    ],
+    "metrics": [
+      {
+        "label": "Reduksi Debu",
+        "value": "95%"
+      },
+      {
+        "label": "Industri",
+        "value": "Plastic & Packaging"
+      },
+      {
+        "label": "Tipe",
+        "value": "Dust Collector"
+      },
+      {
+        "label": "Lokasi",
+        "value": "Surabaya"
+      }
+    ],
+    "image": "/images/portfolio/dust-collector-chiller-pt-unipack-plasindo.jpeg"
+  }
+]
