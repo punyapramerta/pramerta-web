@@ -1,11 +1,11 @@
-"use client";
-
 import Link from "next/link";
-import { useAppData } from "@/hooks/useAppData";
+import { getProducts } from "@/lib/supabase/queries";
 import { WA_NUMBER } from "@/lib/repositories/dataRepository";
 
-export default function ProductTeaser() {
-  const { products } = useAppData();
+export const revalidate = 60;
+
+export default async function ProductTeaser() {
+  const products = await getProducts();
 
   return (
     <section id="product" className="py-20 bg-gray-50">
@@ -24,17 +24,16 @@ export default function ProductTeaser() {
             Semua Produk <span className="material-symbols-outlined text-base">grid_view</span>
           </a>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {products.map((product) => (
             <div key={product.name} className="group relative overflow-hidden rounded-2xl bg-white border border-gray-100 p-7 transition-all hover:shadow-xl hover:-translate-y-1">
               {product.href && product.href !== "#" && (
                 <Link href={product.href} className="absolute inset-0 z-10" aria-label={`Lihat detail ${product.name}`} />
               )}
-              {/* Product image */}
               <div className="relative mb-6 h-44 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-gray-100">
-                <img 
-                  alt={product.imageAlt ?? product.name} 
+                <img
+                  alt={product.imageAlt ?? product.name}
                   className={`w-full h-full transition-transform duration-500 group-hover:scale-105 ${product.imageCover ? "object-cover" : "object-contain max-h-40"}`}
                   src={product.image}
                 />
@@ -50,9 +49,9 @@ export default function ProductTeaser() {
                     {product.badge}
                   </span>
                 </div>
-                
+
                 <p className="text-on-surface-variant text-sm leading-relaxed">{product.description}</p>
-                
+
                 <div className="pt-4 border-t border-gray-100 grid grid-cols-2 gap-4 mb-5">
                   {product.details?.map((detail) => (
                     <div key={detail.label} className="space-y-0.5">
@@ -63,8 +62,8 @@ export default function ProductTeaser() {
                 </div>
 
                 {product.href && product.href !== "#" && (
-                  <Link 
-                    href={product.href} 
+                  <Link
+                    href={product.href}
                     className="relative z-20 flex w-full items-center justify-center gap-2 py-2.5 px-4 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all hover:bg-primary/90 hover:shadow-lg shadow-primary/20"
                   >
                     Baca Selengkapnya

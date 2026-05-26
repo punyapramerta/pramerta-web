@@ -1,0 +1,66 @@
+<svg viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif">
+  <!-- Background -->
+  <defs>
+    <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F2A8A;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#1A3EB4;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="420" fill="url(#bg1)"/>
+  <rect width="800" height="420" fill="white" fill-opacity="0.04"/>
+
+  <!-- Grid dots -->
+  <pattern id="dots" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+    <circle cx="1" cy="1" r="1" fill="white" fill-opacity="0.08"/>
+  </pattern>
+  <rect width="800" height="420" fill="url(#dots)"/>
+
+  <!-- Label top -->
+  <rect x="32" y="32" width="120" height="24" rx="12" fill="white" fill-opacity="0.15"/>
+  <text x="92" y="48" text-anchor="middle" fill="white" font-size="10" font-weight="700" letter-spacing="1">PANDUAN TEKNIS</text>
+
+  <!-- Main title -->
+  <text x="32" y="100" fill="white" font-size="36" font-weight="800" letter-spacing="-0.5">Cara Memilih</text>
+  <text x="32" y="144" fill="#93B4FF" font-size="36" font-weight="800" letter-spacing="-0.5">Chiller yang Tepat</text>
+  <text x="32" y="176" fill="white" fill-opacity="0.7" font-size="14">untuk Industri Manufaktur &amp; Komersial</text>
+
+  <!-- Three chiller type cards -->
+  <!-- Card 1: Air-Cooled -->
+  <rect x="32" y="210" width="220" height="170" rx="16" fill="white" fill-opacity="0.1"/>
+  <rect x="32" y="210" width="220" height="4" rx="2" fill="#60A5FA"/>
+  <text x="52" y="242" fill="#93B4FF" font-size="9" font-weight="700" letter-spacing="1.5">TIPE 01</text>
+  <text x="52" y="262" fill="white" font-size="15" font-weight="800">Air-Cooled</text>
+  <text x="52" y="282" fill="white" font-size="15" font-weight="800">Chiller</text>
+  <text x="52" y="304" fill="white" fill-opacity="0.65" font-size="11">• Tidak perlu cooling tower</text>
+  <text x="52" y="320" fill="white" fill-opacity="0.65" font-size="11">• Instalasi cepat &amp; mudah</text>
+  <text x="52" y="336" fill="white" fill-opacity="0.65" font-size="11">• Cocok kapasitas &lt;200 TR</text>
+  <rect x="52" y="354" width="80" height="18" rx="9" fill="#3B82F6" fill-opacity="0.3"/>
+  <text x="92" y="367" text-anchor="middle" fill="#93B4FF" font-size="10" font-weight="700">50–200 TR</text>
+
+  <!-- Card 2: Water-Cooled -->
+  <rect x="278" y="210" width="220" height="170" rx="16" fill="white" fill-opacity="0.1"/>
+  <rect x="278" y="210" width="220" height="4" rx="2" fill="#34D399"/>
+  <text x="298" y="242" fill="#6EE7B7" font-size="9" font-weight="700" letter-spacing="1.5">TIPE 02</text>
+  <text x="298" y="262" fill="white" font-size="15" font-weight="800">Water-Cooled</text>
+  <text x="298" y="282" fill="white" font-size="15" font-weight="800">Chiller</text>
+  <text x="298" y="304" fill="white" fill-opacity="0.65" font-size="11">• Efisiensi energi tertinggi</text>
+  <text x="298" y="320" fill="white" fill-opacity="0.65" font-size="11">• COP hingga 6.0+</text>
+  <text x="298" y="336" fill="white" fill-opacity="0.65" font-size="11">• Butuh cooling tower</text>
+  <rect x="298" y="354" width="100" height="18" rx="9" fill="#10B981" fill-opacity="0.3"/>
+  <text x="348" y="367" text-anchor="middle" fill="#6EE7B7" font-size="10" font-weight="700">200–2000 TR</text>
+
+  <!-- Card 3: Modular -->
+  <rect x="524" y="210" width="244" height="170" rx="16" fill="white" fill-opacity="0.1"/>
+  <rect x="524" y="210" width="244" height="4" rx="2" fill="#FBBF24"/>
+  <text x="544" y="242" fill="#FDE68A" font-size="9" font-weight="700" letter-spacing="1.5">TIPE 03</text>
+  <text x="544" y="262" fill="white" font-size="15" font-weight="800">Modular</text>
+  <text x="544" y="282" fill="white" font-size="15" font-weight="800">Chiller</text>
+  <text x="544" y="304" fill="white" fill-opacity="0.65" font-size="11">• Kapasitas fleksibel</text>
+  <text x="544" y="320" fill="white" fill-opacity="0.65" font-size="11">• Redundansi N+1</text>
+  <text x="544" y="336" fill="white" fill-opacity="0.65" font-size="11">• Ekspansi mudah</text>
+  <rect x="544" y="354" width="80" height="18" rx="9" fill="#F59E0B" fill-opacity="0.3"/>
+  <text x="584" y="367" text-anchor="middle" fill="#FDE68A" font-size="10" font-weight="700">10–500 TR</text>
+
+  <!-- PAS HVAC brand -->
+  <text x="768" y="410" text-anchor="end" fill="white" fill-opacity="0.4" font-size="10" font-weight="700">PAS HVAC</text>
+</svg>

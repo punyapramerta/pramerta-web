@@ -1,0 +1,74 @@
+<svg viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif">
+  <rect width="800" height="420" fill="#F8FAFF"/>
+
+  <!-- Header band -->
+  <rect x="0" y="0" width="800" height="88" fill="#1A3EB4"/>
+  <text x="400" y="34" text-anchor="middle" fill="white" fill-opacity="0.6" font-size="10" font-weight="700" letter-spacing="2">CARA KERJA</text>
+  <text x="400" y="62" text-anchor="middle" fill="white" font-size="26" font-weight="800">VRF System — Variable Refrigerant Flow</text>
+  <text x="400" y="82" text-anchor="middle" fill="white" fill-opacity="0.6" font-size="11">1 Outdoor Unit → Banyak Indoor Unit dengan kontrol zona independen</text>
+
+  <!-- Outdoor unit box (center bottom) -->
+  <rect x="316" y="310" width="168" height="80" rx="12" fill="#1A3EB4" stroke="#3B5CC4" stroke-width="2"/>
+  <text x="400" y="342" text-anchor="middle" fill="white" font-size="11" font-weight="800">OUTDOOR UNIT</text>
+  <text x="400" y="358" text-anchor="middle" fill="#93B4FF" font-size="10">Variable Speed Compressor</text>
+  <text x="400" y="374" text-anchor="middle" fill="#93B4FF" font-size="10">Kapasitas 8–72 HP</text>
+
+  <!-- Pipes from outdoor to 4 branches -->
+  <!-- Center up to branch -->
+  <line x1="400" y1="310" x2="400" y2="270" stroke="#1A3EB4" stroke-width="3"/>
+  <line x1="120" y1="270" x2="680" y2="270" stroke="#1A3EB4" stroke-width="3"/>
+
+  <!-- Branch lines up -->
+  <line x1="120" y1="270" x2="120" y2="220" stroke="#1A3EB4" stroke-width="2"/>
+  <line x1="320" y1="270" x2="320" y2="220" stroke="#1A3EB4" stroke-width="2"/>
+  <line x1="480" y1="270" x2="480" y2="220" stroke="#1A3EB4" stroke-width="2"/>
+  <line x1="680" y1="270" x2="680" y2="220" stroke="#1A3EB4" stroke-width="2"/>
+
+  <!-- Flow arrows -->
+  <polygon points="400,264 396,274 404,274" fill="#1A3EB4"/>
+  <polygon points="120,225 116,215 124,215" fill="#1A3EB4"/>
+  <polygon points="320,225 316,215 324,215" fill="#1A3EB4"/>
+  <polygon points="480,225 476,215 484,215" fill="#1A3EB4"/>
+  <polygon points="680,225 676,215 684,215" fill="#1A3EB4"/>
+
+  <!-- Indoor units -->
+  <!-- Zone 1 -->
+  <rect x="60" y="138" width="120" height="76" rx="10" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="60" y="138" width="120" height="28" rx="10" fill="#EEF2FF"/>
+  <rect x="60" y="156" width="120" height="10" fill="#EEF2FF"/>
+  <text x="120" y="158" text-anchor="middle" fill="#1A3EB4" font-size="9" font-weight="700">ZONA 1</text>
+  <text x="120" y="178" text-anchor="middle" fill="#1E293B" font-size="11" font-weight="700">Kantor Utama</text>
+  <text x="120" y="194" text-anchor="middle" fill="#64748B" font-size="10">Cassette 4-way</text>
+  <text x="120" y="208" text-anchor="middle" fill="#10B981" font-size="10" font-weight="700">23°C ✓</text>
+
+  <!-- Zone 2 -->
+  <rect x="260" y="138" width="120" height="76" rx="10" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="260" y="138" width="120" height="28" rx="10" fill="#EEF2FF"/>
+  <rect x="260" y="156" width="120" height="10" fill="#EEF2FF"/>
+  <text x="320" y="158" text-anchor="middle" fill="#1A3EB4" font-size="9" font-weight="700">ZONA 2</text>
+  <text x="320" y="178" text-anchor="middle" fill="#1E293B" font-size="11" font-weight="700">Ruang Meeting</text>
+  <text x="320" y="194" text-anchor="middle" fill="#64748B" font-size="10">Floor Standing</text>
+  <text x="320" y="208" text-anchor="middle" fill="#10B981" font-size="10" font-weight="700">22°C ✓</text>
+
+  <!-- Zone 3 -->
+  <rect x="420" y="138" width="120" height="76" rx="10" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="420" y="138" width="120" height="28" rx="10" fill="#EEF2FF"/>
+  <rect x="420" y="156" width="120" height="10" fill="#EEF2FF"/>
+  <text x="480" y="158" text-anchor="middle" fill="#1A3EB4" font-size="9" font-weight="700">ZONA 3</text>
+  <text x="480" y="178" text-anchor="middle" fill="#1E293B" font-size="11" font-weight="700">Server Room</text>
+  <text x="480" y="194" text-anchor="middle" fill="#64748B" font-size="10">Ceiling Concealed</text>
+  <text x="480" y="208" text-anchor="middle" fill="#10B981" font-size="10" font-weight="700">18°C ✓</text>
+
+  <!-- Zone 4 -->
+  <rect x="620" y="138" width="120" height="76" rx="10" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="620" y="138" width="120" height="28" rx="10" fill="#EEF2FF"/>
+  <rect x="620" y="156" width="120" height="10" fill="#EEF2FF"/>
+  <text x="680" y="158" text-anchor="middle" fill="#1A3EB4" font-size="9" font-weight="700">ZONA 4</text>
+  <text x="680" y="178" text-anchor="middle" fill="#1E293B" font-size="11" font-weight="700">Lobby / Resepsi</text>
+  <text x="680" y="194" text-anchor="middle" fill="#64748B" font-size="10">Wall Mounted</text>
+  <text x="680" y="208" text-anchor="middle" fill="#10B981" font-size="10" font-weight="700">25°C ✓</text>
+
+  <!-- Key benefit strip -->
+  <rect x="0" y="398" width="800" height="22" fill="#EEF2FF"/>
+  <text x="400" y="413" text-anchor="middle" fill="#1A3EB4" font-size="10" font-weight="700">⚡ Hemat energi 30–50% vs sistem konvensional  ·  🎛️ Kontrol independen per zona  ·  🔧 1 unit outdoor, unlimited zona</text>
+</svg>

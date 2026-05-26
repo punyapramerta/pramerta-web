@@ -1,13 +1,12 @@
-"use client";
+import { getClientLogos } from "@/lib/supabase/queries";
 
-import { useAppData } from "@/hooks/useAppData";
+export const revalidate = 60;
 
-export default function ClientLogos() {
-  const { clients } = useAppData();
+export default async function ClientLogos() {
+  const clients = await getClientLogos();
 
-  // Duplicate list enough times to ensure it fills even 4K screens.
-  // 6 logos * 5 times = 30 logos per block, definitely wider than any screen.
-  const repeatedClients = [...clients, ...clients, ...clients, ...clients, ...clients];
+  // Repeat enough times to fill even wide screens
+  const repeated = [...clients, ...clients, ...clients, ...clients, ...clients];
 
   return (
     <section className="py-10 bg-white border-b border-gray-100 overflow-hidden relative group">
@@ -25,13 +24,9 @@ export default function ClientLogos() {
 
       {/* Marquee wrapper */}
       <div className="flex flex-nowrap w-full group-hover:[&>div]:[animation-play-state:paused]">
-        {/* First set */}
         <div className="flex flex-shrink-0 gap-14 pr-14 animate-marquee items-center">
-          {repeatedClients.map((client, i) => (
-            <div
-              key={`set1-${client.name}-${i}`}
-              className="inline-flex items-center justify-center flex-shrink-0"
-            >
+          {repeated.map((client, i) => (
+            <div key={`set1-${client.name}-${i}`} className="inline-flex items-center justify-center flex-shrink-0">
               <img
                 alt={client.name}
                 src={client.image}
@@ -40,14 +35,9 @@ export default function ClientLogos() {
             </div>
           ))}
         </div>
-
-        {/* Second set */}
         <div className="flex flex-shrink-0 gap-14 pr-14 animate-marquee items-center" aria-hidden="true">
-          {repeatedClients.map((client, i) => (
-            <div
-              key={`set2-${client.name}-${i}`}
-              className="inline-flex items-center justify-center flex-shrink-0"
-            >
+          {repeated.map((client, i) => (
+            <div key={`set2-${client.name}-${i}`} className="inline-flex items-center justify-center flex-shrink-0">
               <img
                 alt={client.name}
                 src={client.image}
@@ -57,16 +47,6 @@ export default function ClientLogos() {
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-100%); }
-        }
-        .animate-marquee {
-          animation: marquee 50s linear infinite;
-        }
-      `}</style>
     </section>
   );
 }

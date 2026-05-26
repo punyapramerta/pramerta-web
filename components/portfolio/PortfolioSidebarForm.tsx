@@ -3,23 +3,21 @@
 import { useLeadForm } from "@/hooks/useLeadForm";
 import { useAppData } from "@/hooks/useAppData";
 
-export default function BlogSidebarForm() {
+export default function PortfolioSidebarForm() {
   const { leadForm } = useAppData();
-  const { 
-    register, 
-    onSubmit, 
-    submitted, 
-    errors, 
-    isSubmitting 
-  } = useLeadForm("blog_sidebar");
+  const {
+    register,
+    onSubmit,
+    submitted,
+    errors,
+    isSubmitting,
+  } = useLeadForm("portfolio_sidebar");
 
   if (submitted) {
     return (
       <div className="bg-white rounded-3xl border border-neutral-100 p-8 shadow-sm text-center">
-        <div className="w-16 h-16 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-5 text-primary-600">
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-          </svg>
+        <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-5 text-primary">
+          <span className="material-symbols-outlined text-3xl">check_circle</span>
         </div>
         <h3 className="text-xl font-extrabold text-neutral-900 mb-2">Pesan Terkirim!</h3>
         <p className="text-sm text-neutral-500">Tim engineer kami akan segera menghubungi Anda melalui WhatsApp.</p>
@@ -28,12 +26,12 @@ export default function BlogSidebarForm() {
   }
 
   return (
-    <div className="bg-white rounded-3xl border border-neutral-100 p-8 shadow-xl shadow-primary-500/5">
+    <div className="bg-white rounded-3xl border border-neutral-100 p-8 shadow-xl shadow-primary/5">
       <h3 className="text-xl font-headline font-extrabold text-neutral-900 mb-2 leading-tight">
-        Dapatkan Penawaran Khusus
+        Konsultasi Proyek Anda
       </h3>
       <p className="text-sm text-neutral-500 mb-6 font-body leading-relaxed">
-        Konsultasikan kebutuhan sistem pendingin industrial Anda dengan ahli kami.
+        Diskusikan kebutuhan instalasi atau maintenance sistem tata udara dengan engineer kami.
       </p>
 
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
@@ -43,7 +41,7 @@ export default function BlogSidebarForm() {
             {...register("nama")}
             type="text"
             placeholder="Cth: John Doe"
-            className="w-full px-4 py-3 text-sm font-bold border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 bg-neutral-50 placeholder:text-neutral-400 transition-all"
+            className="w-full px-4 py-3 text-sm font-bold border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-neutral-50 placeholder:text-neutral-400 transition-all"
           />
           {errors.nama && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.nama.message}</p>}
         </div>
@@ -54,7 +52,7 @@ export default function BlogSidebarForm() {
             {...register("whatsapp")}
             type="tel"
             placeholder="Cth: 08123456789"
-            className="w-full px-4 py-3 text-sm font-bold border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 bg-neutral-50 placeholder:text-neutral-400 transition-all"
+            className="w-full px-4 py-3 text-sm font-bold border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-neutral-50 placeholder:text-neutral-400 transition-all"
           />
           {errors.whatsapp && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.whatsapp.message}</p>}
         </div>
@@ -64,7 +62,7 @@ export default function BlogSidebarForm() {
           <div className="relative">
             <select
               {...register("kebutuhan")}
-              className="w-full px-4 py-3 text-sm font-bold border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 bg-neutral-50 text-neutral-900 transition-all appearance-none cursor-pointer"
+              className="w-full px-4 py-3 text-sm font-bold border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-neutral-50 text-neutral-900 transition-all appearance-none cursor-pointer"
             >
               <option value="">-- Pilih --</option>
               {leadForm.options.map((opt) => (

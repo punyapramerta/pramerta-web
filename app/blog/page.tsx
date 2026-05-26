@@ -3,6 +3,9 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BlogSidebar from "@/components/blog/BlogSidebar";
+import { getPublishedBlogPosts } from "@/app/admin/blogActions";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Blog HVAC | Insight Industri & Solusi Sistem Pendingin",
@@ -13,82 +16,6 @@ export const metadata: Metadata = {
   },
 };
 
-const placeholderPosts = [
-  {
-    slug: "cara-memilih-chiller-yang-tepat",
-    category: "Panduan",
-    title: "Cara Memilih Chiller yang Tepat untuk Industri Manufaktur",
-    excerpt: "Memilih kapasitas dan jenis chiller yang sesuai sangat krusial untuk efisiensi energi. Panduan lengkap dari engineer kami.",
-    date: "15 April 2025",
-    readTime: "5 menit",
-  },
-  {
-    slug: "perbedaan-ahu-dan-fcu",
-    category: "Edukasi",
-    title: "Perbedaan Air Handling Unit (AHU) dan Fan Coil Unit (FCU)",
-    excerpt: "AHU dan FCU sama-sama berperan dalam sistem pendinginan, namun punya fungsi dan aplikasi yang berbeda.",
-    date: "10 April 2025",
-    readTime: "4 menit",
-  },
-  {
-    slug: "keunggulan-vrf-system",
-    category: "Produk",
-    title: "Keunggulan VRF System untuk Gedung Komersial Besar",
-    excerpt: "Sistem VRF multi-inverter DC menawarkan efisiensi tinggi dan fleksibilitas zona untuk pusat perbelanjaan.",
-    date: "5 April 2025",
-    readTime: "6 menit",
-  },
-  {
-    slug: "jadwal-preventive-maintenance",
-    category: "Maintenance",
-    title: "Jadwal Preventive Maintenance HVAC yang Ideal",
-    excerpt: "Perawatan berkala adalah kunci agar sistem HVAC tetap optimal. Berikut checklist PM yang disarankan.",
-    date: "1 April 2025",
-    readTime: "7 menit",
-  },
-  {
-    slug: "ducting-pu-vs-bjls",
-    category: "Produk",
-    title: "Perbandingan Ducting PU Panel vs Sheet Metal (BJLS)",
-    excerpt: "Dua material ducting populer ini punya kelebihan masing-masing. Pahami perbedaannya sebelum memilih.",
-    date: "25 Maret 2025",
-    readTime: "5 menit",
-  },
-  {
-    slug: "iso-9001-sertifikasi-hvac",
-    category: "Regulasi",
-    title: "Mengapa Sertifikasi ISO Penting Saat Memilih Kontraktor?",
-    excerpt: "Sertifikasi ISO adalah jaminan bahwa vendor memenuhi standar kualitas, lingkungan, dan keselamatan.",
-    date: "20 Maret 2025",
-    readTime: "4 menit",
-  },
-  {
-    slug: "efisiensi-energi-gedung",
-    category: "Insight",
-    title: "5 Strategi Meningkatkan Efisiensi Energi di Gedung Bertingkat",
-    excerpt: "Optimasi sistem HVAC adalah langkah pertama menekan biaya operasional gedung hingga 30% per tahun.",
-    date: "15 Maret 2025",
-    readTime: "8 menit",
-  },
-  {
-    slug: "inovasi-pendingin-ramah-lingkungan",
-    category: "Teknologi",
-    title: "Inovasi Refrigeran Ramah Lingkungan Generasi Terbaru",
-    excerpt: "Mengenal jenis refrigeran masa depan yang memiliki potensi pemanasan global (GWP) sangat rendah.",
-    date: "10 Maret 2025",
-    readTime: "6 menit",
-  },
-  {
-    slug: "kesalahan-instalasi-hvac",
-    category: "Panduan",
-    title: "7 Kesalahan Fatal dalam Instalasi HVAC Industrial",
-    excerpt: "Hindari kesalahan umum saat instalasi chiller dan ducting yang bisa berakibat pada kebocoran dan kerugian fatal.",
-    date: "5 Maret 2025",
-    readTime: "5 menit",
-  },
-];
-
-// Portfolios have been moved to BlogSidebar component
 const categoryStyles: Record<string, string> = {
   Panduan: "bg-blue-50 text-blue-700 border-blue-100",
   Edukasi: "bg-purple-50 text-purple-700 border-purple-100",
@@ -99,7 +26,9 @@ const categoryStyles: Record<string, string> = {
   Teknologi: "bg-cyan-50 text-cyan-700 border-cyan-100",
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const posts = await getPublishedBlogPosts();
+
   return (
     <>
       <Navbar />
@@ -135,7 +64,13 @@ export default function BlogPage() {
                 
                 {/* Blog Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
-                  {placeholderPosts.map((post) => (
+                  {posts.length === 0 && (
+                    <div className="col-span-3 py-20 text-center text-neutral-400">
+                      <span className="material-symbols-outlined text-5xl block mb-3">article</span>
+                      <p className="font-bold">Belum ada artikel yang dipublikasikan.</p>
+                    </div>
+                  )}
+                  {posts.map((post) => (
                     <Link
                       key={post.slug}
                       href={`/blog/${post.slug}`}
@@ -145,9 +80,11 @@ export default function BlogPage() {
                       {/* Image Container (1:1 Ratio) */}
                       <div className="aspect-square bg-neutral-100 relative overflow-hidden flex items-center justify-center">
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
-                        <span className="material-symbols-outlined text-5xl text-neutral-300 group-hover:scale-110 group-hover:text-primary-300 transition-all duration-500 relative z-0">
-                          image
-                        </span>
+                        {post.imageUrl ? (
+                          <img src={post.imageUrl} alt={post.title} className="absolute inset-0 w-full h-full object-cover" />
+                        ) : (
+                          <span className="material-symbols-outlined text-5xl text-neutral-300 group-hover:scale-110 group-hover:text-primary-300 transition-all duration-500 relative z-0">image</span>
+                        )}
                         {/* Tags floating on image */}
                         <div className="absolute top-4 left-4 z-20">
                           <span className={`text-[9px] font-extrabold px-3 py-1.5 rounded-lg border uppercase tracking-wider bg-white/90 backdrop-blur-sm ${categoryStyles[post.category] ?? "text-neutral-600"}`}>
@@ -159,9 +96,9 @@ export default function BlogPage() {
                       {/* Content Container */}
                       <div className="p-6 flex flex-col flex-1">
                         <div className="flex items-center gap-3 mb-3 text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest">
-                          <span>{post.date}</span>
-                          <span className="w-1 h-1 rounded-full bg-neutral-300" />
-                          <span>{post.readTime}</span>
+                          {post.publishedAt && <span>{new Date(post.publishedAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>}
+                          {post.publishedAt && post.readTime && <span className="w-1 h-1 rounded-full bg-neutral-300" />}
+                          {post.readTime && <span>{post.readTime}</span>}
                         </div>
 
                         <h2 className="text-lg font-headline font-extrabold text-neutral-900 mb-3 leading-snug group-hover:text-primary-600 transition-colors line-clamp-2">

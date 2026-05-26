@@ -1,0 +1,76 @@
+<svg viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif">
+  <rect width="800" height="420" fill="#0F172A"/>
+  <rect width="800" height="5" fill="#1A3EB4"/>
+
+  <!-- Header -->
+  <text x="400" y="44" text-anchor="middle" fill="white" fill-opacity="0.5" font-size="10" font-weight="700" letter-spacing="2">PERBANDINGAN MATERIAL</text>
+  <text x="400" y="74" text-anchor="middle" fill="white" font-size="26" font-weight="800">Sheet Metal vs Textile Duct</text>
+
+  <!-- Center divider -->
+  <line x1="400" y1="90" x2="400" y2="420" stroke="white" stroke-opacity="0.1" stroke-width="1"/>
+
+  <!-- Sheet Metal side -->
+  <text x="200" y="108" text-anchor="middle" fill="#60A5FA" font-size="18" font-weight="800">Sheet Metal (BJLS)</text>
+
+  <!-- Sheet metal cross section -->
+  <rect x="100" y="124" width="200" height="80" rx="4" fill="none" stroke="#60A5FA" stroke-width="3"/>
+  <rect x="103" y="127" width="194" height="74" rx="2" fill="#1E3A5F" fill-opacity="0.5"/>
+  <!-- insulation layer -->
+  <rect x="90" y="116" width="220" height="8" rx="4" fill="#60A5FA" fill-opacity="0.3"/>
+  <rect x="90" y="200" width="220" height="8" rx="4" fill="#60A5FA" fill-opacity="0.3"/>
+  <!-- Air flow arrows -->
+  <text x="200" y="170" text-anchor="middle" fill="#60A5FA" font-size="22">→ → →</text>
+  <text x="200" y="188" text-anchor="middle" fill="#64748B" font-size="9">Airflow di dalam duct persegi</text>
+
+  <text x="100" y="232" fill="#94A3B8" font-size="11">✓  Kuat &amp; tahan lama (15–20 thn)</text>
+  <text x="100" y="250" fill="#94A3B8" font-size="11">✓  Cocok tekanan tinggi (&gt;750 Pa)</text>
+  <text x="100" y="268" fill="#94A3B8" font-size="11">✓  Presisi dimensi tinggi (SMACNA)</text>
+  <text x="100" y="286" fill="#94A3B8" font-size="11">✓  Ideal cleanroom &amp; industri</text>
+  <text x="100" y="308" fill="#475569" font-size="11">✗  Berat, instalasi perlu crane</text>
+  <text x="100" y="326" fill="#475569" font-size="11">✗  Kondensasi jika tidak terinsulasi</text>
+
+  <rect x="100" y="348" width="90" height="20" rx="10" fill="#1E3A5F"/>
+  <text x="145" y="362" text-anchor="middle" fill="#60A5FA" font-size="10" font-weight="700">BJLS / SUS / ALU</text>
+  <rect x="205" y="348" width="90" height="20" rx="10" fill="#1E3A5F"/>
+  <text x="250" y="362" text-anchor="middle" fill="#60A5FA" font-size="10" font-weight="700">Standar SMACNA</text>
+
+  <!-- Textile Duct side -->
+  <text x="600" y="108" text-anchor="middle" fill="#34D399" font-size="18" font-weight="800">Textile Duct (Kain)</text>
+
+  <!-- Textile duct cross section (round) -->
+  <ellipse cx="600" cy="164" rx="100" ry="42" fill="#1E3D2F" fill-opacity="0.6" stroke="#34D399" stroke-width="3"/>
+  <!-- Pores/holes for air distribution -->
+  <circle cx="540" cy="154" r="3" fill="#34D399" fill-opacity="0.6"/>
+  <circle cx="555" cy="148" r="3" fill="#34D399" fill-opacity="0.6"/>
+  <circle cx="570" cy="145" r="3" fill="#34D399" fill-opacity="0.6"/>
+  <circle cx="585" cy="144" r="3" fill="#34D399" fill-opacity="0.6"/>
+  <circle cx="600" cy="144" r="3" fill="#34D399" fill-opacity="0.6"/>
+  <circle cx="615" cy="144" r="3" fill="#34D399" fill-opacity="0.6"/>
+  <circle cx="630" cy="145" r="3" fill="#34D399" fill-opacity="0.6"/>
+  <circle cx="645" cy="148" r="3" fill="#34D399" fill-opacity="0.6"/>
+  <circle cx="660" cy="154" r="3" fill="#34D399" fill-opacity="0.6"/>
+  <!-- Distribution arrows -->
+  <line x1="555" y1="148" x2="530" y2="130" stroke="#34D399" stroke-width="1.5" stroke-opacity="0.6"/>
+  <line x1="600" y1="144" x2="600" y2="120" stroke="#34D399" stroke-width="1.5" stroke-opacity="0.6"/>
+  <line x1="645" y1="148" x2="670" y2="130" stroke="#34D399" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="600" y="172" text-anchor="middle" fill="#34D399" fill-opacity="0.7" font-size="9">Distribusi udara merata 360°</text>
+  <text x="600" y="188" text-anchor="middle" fill="#64748B" font-size="9">Pori mikro sepanjang permukaan</text>
+
+  <text x="500" y="232" fill="#94A3B8" font-size="11">✓  Distribusi udara merata sempurna</text>
+  <text x="500" y="250" fill="#94A3B8" font-size="11">✓  Ringan, pasang 1 hari (vs 1 minggu)</text>
+  <text x="500" y="268" fill="#94A3B8" font-size="11">✓  Anti kondensasi, tidak perlu insulasi</text>
+  <text x="500" y="286" fill="#94A3B8" font-size="11">✓  Ideal warehouse, F&amp;B, pabrik</text>
+  <text x="500" y="308" fill="#475569" font-size="11">✗  Hanya untuk tekanan rendah</text>
+  <text x="500" y="326" fill="#475569" font-size="11">✗  Perlu cuci berkala (1–2× setahun)</text>
+
+  <rect x="500" y="348" width="90" height="20" rx="10" fill="#1E3D2F"/>
+  <text x="545" y="362" text-anchor="middle" fill="#34D399" font-size="10" font-weight="700">Fabric / Polyester</text>
+  <rect x="605" y="348" width="90" height="20" rx="10" fill="#1E3D2F"/>
+  <text x="650" y="362" text-anchor="middle" fill="#34D399" font-size="10" font-weight="700">Merk: PRIHODA</text>
+
+  <!-- VS badge -->
+  <rect x="374" y="152" width="52" height="28" rx="14" fill="#1A3EB4"/>
+  <text x="400" y="171" text-anchor="middle" fill="white" font-size="13" font-weight="900">VS</text>
+
+  <text x="768" y="410" text-anchor="end" fill="white" fill-opacity="0.3" font-size="10" font-weight="700">PAS HVAC</text>
+</svg>

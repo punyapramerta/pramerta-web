@@ -14,6 +14,7 @@ export default function Sidebar() {
     { name: "Produk", href: "/admin/products", icon: "inventory_2" },
     { name: "Portofolio", href: "/admin/portfolio", icon: "cases" },
     { name: "Blog", href: "/admin/blog", icon: "article" },
+    { name: "Leads", href: "/admin/leads", icon: "contact_mail" },
     { name: "Analitik", href: "/admin/analytics", icon: "analytics" },
   ];
 

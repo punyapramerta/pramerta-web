@@ -11,9 +11,12 @@ export const metadata: Metadata = {
     "Lihat berbagai proyek sukses kami dalam menghadirkan solusi instalasi chiller, AHU, dan sistem HVAC untuk kebutuhan industri jasa dan manufaktur.",
 };
 
-import { portfolioData } from "@/lib/repositories/dataRepository";
+import { getPortfolioItems } from "@/app/admin/portfolioActions";
 
-export default function PortfolioPage() {
+export const revalidate = 60;
+
+export default async function PortfolioPage() {
+  const portfolioData = await getPortfolioItems();
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",

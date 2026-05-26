@@ -5,27 +5,40 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PortfolioSidebar from "@/components/portfolio/PortfolioSidebar";
-import { portfolioData } from "@/lib/repositories/dataRepository";
+import { getPortfolioItems } from "@/app/admin/portfolioActions";
+
+export const revalidate = 60;
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const project = portfolioData.find((p) => p.slug === slug);
-  if (!project) return {};
-  return {
-    title: `${project.title} | Portfolio PAS HVAC`,
-    description: project.excerpt,
-  };
+  try {
+    const items = await getPortfolioItems();
+    const project = items.find((p) => p.slug === slug);
+    if (!project) return {};
+    return {
+      title: `${project.title} | Portfolio PAS HVAC`,
+      description: project.excerpt,
+    };
+  } catch {
+    return {};
+  }
 }
 
-export function generateStaticParams() {
-  return portfolioData.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  try {
+    const items = await getPortfolioItems();
+    return items.map((p) => ({ slug: p.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export default async function SinglePortfolioPage({ params }: Props) {
   const { slug } = await params;
-  const project = portfolioData.find((p) => p.slug === slug);
+  const items = await getPortfolioItems();
+  const project = items.find((p) => p.slug === slug);
   if (!project) notFound();
 
   const breadcrumbSchema = {

@@ -1,5 +1,6 @@
 import { event } from "@/lib/gtag";
 import { WA_NUMBER } from "@/lib/repositories/dataRepository";
+import { supabase } from "@/lib/supabase/client";
 
 export interface LeadFormData {
   nama: string;
@@ -17,7 +18,18 @@ export const leadService = {
     data: LeadFormData,
     source: "hero" | "footer" | "bottom" | "blog_sidebar" | "portfolio_sidebar" | "portfolio_bottom"
   ): Promise<void> {
-    // 1. Trigger Analytics
+    // 1. Save to Supabase (fire-and-forget, don't block WhatsApp on failure)
+    supabase.from("leads").insert({
+      nama: data.nama,
+      whatsapp: data.whatsapp,
+      kebutuhan: data.kebutuhan,
+      pesan: data.pesan ?? null,
+      source,
+    }).then(({ error }) => {
+      if (error) console.error("Lead insert failed:", error.message);
+    });
+
+    // 2. Trigger Analytics
     event({
       action: `lead_form_${source}`,
       category: "lead_gen",

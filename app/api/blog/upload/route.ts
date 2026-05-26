@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 
-const BUCKET = "portfolio-images";
+const BUCKET = "blog-images";
+const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "avif", "svg"];
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
@@ -13,16 +14,15 @@ export async function POST(req: NextRequest) {
   }
 
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-  const allowed = ["jpg", "jpeg", "png", "webp", "avif"];
-  if (!allowed.includes(ext)) {
-    return NextResponse.json({ error: "Format tidak didukung" }, { status: 400 });
+  if (!ALLOWED_EXT.includes(ext)) {
+    return NextResponse.json({ error: "Format tidak didukung. Gunakan JPG, PNG, WEBP, AVIF, atau SVG." }, { status: 400 });
   }
 
   const supabase = createServerClient();
   const filename = `${slug}.${ext}`;
 
-  // Remove existing image for this slug (all extensions)
-  for (const e of allowed) {
+  // Remove existing images for this slug
+  for (const e of ALLOWED_EXT) {
     await supabase.storage.from(BUCKET).remove([`${slug}.${e}`]);
   }
 
@@ -47,10 +47,9 @@ export async function DELETE(req: NextRequest) {
   if (!slug) return NextResponse.json({ error: "Missing slug" }, { status: 400 });
 
   const supabase = createServerClient();
-  const allowed = ["jpg", "jpeg", "png", "webp", "avif"];
   await supabase.storage
     .from(BUCKET)
-    .remove(allowed.map((e) => `${slug}.${e}`));
+    .remove(ALLOWED_EXT.map((e) => `${slug}.${e}`));
 
   return NextResponse.json({ success: true });
 }

@@ -1,0 +1,69 @@
+<svg viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif">
+  <rect width="800" height="420" fill="#0F172A"/>
+  <pattern id="grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="0.3" stroke-opacity="0.05"/>
+  </pattern>
+  <rect width="800" height="420" fill="url(#grid)"/>
+
+  <!-- Top label -->
+  <rect x="32" y="28" width="130" height="22" rx="11" fill="#1A3EB4" fill-opacity="0.6"/>
+  <text x="97" y="43" text-anchor="middle" fill="#93B4FF" font-size="9" font-weight="700" letter-spacing="1.5">PANDUAN PERAWATAN</text>
+
+  <!-- Title -->
+  <text x="32" y="84" fill="white" font-size="32" font-weight="800">Jadwal Preventive</text>
+  <text x="32" y="120" fill="#38BDF8" font-size="32" font-weight="800">Maintenance HVAC</text>
+
+  <!-- Three schedule columns -->
+  <!-- Monthly -->
+  <rect x="32" y="152" width="224" height="240" rx="16" fill="#1E293B"/>
+  <rect x="32" y="152" width="224" height="40" rx="16" fill="#1A3EB4"/>
+  <rect x="32" y="172" width="224" height="20" fill="#1A3EB4"/>
+  <text x="144" y="178" text-anchor="middle" fill="white" font-size="9" font-weight="700" letter-spacing="2">BULANAN</text>
+  <text x="144" y="208" text-anchor="middle" fill="#93B4FF" font-size="28" font-weight="900">12×</text>
+  <text x="144" y="225" text-anchor="middle" fill="#64748B" font-size="10">per tahun</text>
+
+  <text x="52" y="252" fill="#94A3B8" font-size="11">✓  Bersihkan filter udara</text>
+  <text x="52" y="270" fill="#94A3B8" font-size="11">✓  Cek tekanan refrigran</text>
+  <text x="52" y="288" fill="#94A3B8" font-size="11">✓  Periksa kondensasi drain</text>
+  <text x="52" y="306" fill="#94A3B8" font-size="11">✓  Cek noise &amp; vibrasi</text>
+  <text x="52" y="324" fill="#94A3B8" font-size="11">✓  Inspeksi panel elektrik</text>
+  <text x="52" y="342" fill="#94A3B8" font-size="11">✓  Log suhu supply/return</text>
+  <rect x="52" y="360" width="60" height="18" rx="9" fill="#1A3EB4" fill-opacity="0.4"/>
+  <text x="82" y="373" text-anchor="middle" fill="#93B4FF" font-size="9" font-weight="700">4–6 jam</text>
+
+  <!-- Quarterly -->
+  <rect x="288" y="152" width="224" height="240" rx="16" fill="#1E293B"/>
+  <rect x="288" y="152" width="224" height="40" rx="16" fill="#0F766E"/>
+  <rect x="288" y="172" width="224" height="20" fill="#0F766E"/>
+  <text x="400" y="178" text-anchor="middle" fill="white" font-size="9" font-weight="700" letter-spacing="2">TRIWULANAN</text>
+  <text x="400" y="208" text-anchor="middle" fill="#6EE7B7" font-size="28" font-weight="900">4×</text>
+  <text x="400" y="225" text-anchor="middle" fill="#64748B" font-size="10">per tahun</text>
+
+  <text x="308" y="252" fill="#94A3B8" font-size="11">✓  Flush &amp; bersihkan coil</text>
+  <text x="308" y="270" fill="#94A3B8" font-size="11">✓  Kalibrasi thermostat</text>
+  <text x="308" y="288" fill="#94A3B8" font-size="11">✓  Periksa sabuk &amp; bearing</text>
+  <text x="308" y="306" fill="#94A3B8" font-size="11">✓  Uji fungsi safety device</text>
+  <text x="308" y="324" fill="#94A3B8" font-size="11">✓  Periksa insulasi pipa</text>
+  <text x="308" y="342" fill="#94A3B8" font-size="11">✓  Uji kapasitas pendinginan</text>
+  <rect x="308" y="360" width="60" height="18" rx="9" fill="#0F766E" fill-opacity="0.5"/>
+  <text x="338" y="373" text-anchor="middle" fill="#6EE7B7" font-size="9" font-weight="700">1–2 hari</text>
+
+  <!-- Annual -->
+  <rect x="544" y="152" width="224" height="240" rx="16" fill="#1E293B"/>
+  <rect x="544" y="152" width="224" height="40" rx="16" fill="#92400E"/>
+  <rect x="544" y="172" width="224" height="20" fill="#92400E"/>
+  <text x="656" y="178" text-anchor="middle" fill="white" font-size="9" font-weight="700" letter-spacing="2">TAHUNAN</text>
+  <text x="656" y="208" text-anchor="middle" fill="#FDE68A" font-size="28" font-weight="900">1×</text>
+  <text x="656" y="225" text-anchor="middle" fill="#64748B" font-size="10">per tahun</text>
+
+  <text x="564" y="252" fill="#94A3B8" font-size="11">✓  Overhaul kompresor</text>
+  <text x="564" y="270" fill="#94A3B8" font-size="11">✓  Ganti refrigran &amp; oli</text>
+  <text x="564" y="288" fill="#94A3B8" font-size="11">✓  Pressure test sistem</text>
+  <text x="564" y="306" fill="#94A3B8" font-size="11">✓  Kalibrasi kontrol BMS</text>
+  <text x="564" y="324" fill="#94A3B8" font-size="11">✓  Uji efisiensi &amp; COP</text>
+  <text x="564" y="342" fill="#94A3B8" font-size="11">✓  Laporan kondisi aset</text>
+  <rect x="564" y="360" width="60" height="18" rx="9" fill="#92400E" fill-opacity="0.5"/>
+  <text x="594" y="373" text-anchor="middle" fill="#FDE68A" font-size="9" font-weight="700">3–5 hari</text>
+
+  <text x="768" y="410" text-anchor="end" fill="white" fill-opacity="0.3" font-size="10" font-weight="700">PAS HVAC</text>
+</svg>

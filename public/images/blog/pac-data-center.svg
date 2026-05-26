@@ -1,0 +1,94 @@
+<svg viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif">
+  <defs>
+    <linearGradient id="roombg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F2A4A"/>
+      <stop offset="100%" style="stop-color:#0A1628"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="420" fill="url(#roombg)"/>
+
+  <!-- Header -->
+  <rect x="0" y="0" width="800" height="70" fill="#0D1B2A"/>
+  <text x="400" y="28" text-anchor="middle" fill="#38BDF8" fill-opacity="0.7" font-size="9" font-weight="700" letter-spacing="2">PRECISION AIR CONDITIONING</text>
+  <text x="400" y="54" text-anchor="middle" fill="white" font-size="24" font-weight="800">Sistem Pendinginan Data Center</text>
+
+  <!-- Cold aisle label -->
+  <rect x="30" y="82" width="740" height="20" rx="4" fill="#1A3EB4" fill-opacity="0.2"/>
+  <text x="400" y="96" text-anchor="middle" fill="#60A5FA" font-size="10" font-weight="700" letter-spacing="1">↓ COLD AISLE — Udara Dingin Masuk dari Lantai (15–18°C) ↓</text>
+
+  <!-- Floor tiles -->
+  <rect x="180" y="104" width="440" height="12" rx="2" fill="#1A3EB4" fill-opacity="0.3"/>
+  <text x="400" y="113" text-anchor="middle" fill="#60A5FA" font-size="8">RAISED FLOOR (udara dingin disuplai dari bawah)</text>
+
+  <!-- Server racks - 5 racks -->
+  <rect x="182" y="116" width="60" height="130" rx="4" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <rect x="182" y="116" width="60" height="8" rx="2" fill="#10B981"/>
+  <text x="212" y="186" text-anchor="middle" fill="#64748B" font-size="8" writing-mode="tb">SERVER RACK 1</text>
+
+  <rect x="262" y="116" width="60" height="130" rx="4" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <rect x="262" y="116" width="60" height="8" rx="2" fill="#10B981"/>
+  <text x="292" y="186" text-anchor="middle" fill="#64748B" font-size="8" writing-mode="tb">SERVER RACK 2</text>
+
+  <rect x="342" y="116" width="60" height="130" rx="4" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <rect x="342" y="116" width="60" height="8" rx="2" fill="#10B981"/>
+  <text x="372" y="186" text-anchor="middle" fill="#64748B" font-size="8" writing-mode="tb">SERVER RACK 3</text>
+
+  <rect x="422" y="116" width="60" height="130" rx="4" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <rect x="422" y="116" width="60" height="8" rx="2" fill="#10B981"/>
+  <text x="452" y="186" text-anchor="middle" fill="#64748B" font-size="8" writing-mode="tb">SERVER RACK 4</text>
+
+  <rect x="502" y="116" width="60" height="130" rx="4" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <rect x="502" y="116" width="60" height="8" rx="2" fill="#10B981"/>
+  <text x="532" y="186" text-anchor="middle" fill="#64748B" font-size="8" writing-mode="tb">SERVER RACK 5</text>
+
+  <!-- Hot aisle -->
+  <rect x="30" y="250" width="740" height="20" rx="4" fill="#7F1D1D" fill-opacity="0.4"/>
+  <text x="400" y="264" text-anchor="middle" fill="#FCA5A5" font-size="10" font-weight="700" letter-spacing="1">↑ HOT AISLE — Udara Panas Keluar dari Belakang Rack (35–45°C) ↑</text>
+
+  <!-- PAC Units left and right -->
+  <rect x="30" y="116" width="130" height="130" rx="8" fill="#0C2A4A" stroke="#1A3EB4" stroke-width="2"/>
+  <text x="95" y="144" text-anchor="middle" fill="#38BDF8" font-size="10" font-weight="800">PAC UNIT</text>
+  <text x="95" y="158" text-anchor="middle" fill="#64748B" font-size="9">Precision AC</text>
+  <rect x="50" y="165" width="90" height="28" rx="6" fill="#1A3EB4" fill-opacity="0.4"/>
+  <text x="95" y="179" text-anchor="middle" fill="#93B4FF" font-size="9" font-weight="700">±0.5°C Presisi</text>
+  <text x="95" y="194" text-anchor="middle" fill="#64748B" font-size="8">±2% RH Kelembapan</text>
+  <text x="95" y="210" text-anchor="middle" fill="#10B981" font-size="9" font-weight="700">Status: ACTIVE</text>
+  <!-- Cool air arrows -->
+  <path d="M 162 160 L 180 160" stroke="#38BDF8" stroke-width="2" stroke-dasharray="4,2"/>
+  <polygon points="180,157 188,160 180,163" fill="#38BDF8"/>
+
+  <rect x="640" y="116" width="130" height="130" rx="8" fill="#0C2A4A" stroke="#1A3EB4" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="705" y="144" text-anchor="middle" fill="#64748B" font-size="10" font-weight="800">PAC UNIT</text>
+  <text x="705" y="158" text-anchor="middle" fill="#475569" font-size="9">Standby (N+1)</text>
+  <rect x="660" y="165" width="90" height="28" rx="6" fill="#1E293B"/>
+  <text x="705" y="179" text-anchor="middle" fill="#64748B" font-size="9" font-weight="700">Redundansi</text>
+  <text x="705" y="194" text-anchor="middle" fill="#475569" font-size="8">Uptime 99.99%</text>
+  <text x="705" y="210" text-anchor="middle" fill="#F59E0B" font-size="9" font-weight="700">Status: STANDBY</text>
+
+  <!-- Stats bottom -->
+  <rect x="30" y="290" width="160" height="90" rx="10" fill="#0D1B2A" stroke="#1E293B" stroke-width="1"/>
+  <text x="110" y="316" text-anchor="middle" fill="#38BDF8" font-size="24" font-weight="900">±1°C</text>
+  <text x="110" y="334" text-anchor="middle" fill="#64748B" font-size="10">Stabilitas Suhu</text>
+  <text x="110" y="354" text-anchor="middle" fill="#94A3B8" font-size="10">24/7 tanpa henti</text>
+  <text x="110" y="372" text-anchor="middle" fill="#10B981" font-size="10" font-weight="700">TIA-942 Tier III</text>
+
+  <rect x="210" y="290" width="160" height="90" rx="10" fill="#0D1B2A" stroke="#1E293B" stroke-width="1"/>
+  <text x="290" y="316" text-anchor="middle" fill="#34D399" font-size="24" font-weight="900">99.99%</text>
+  <text x="290" y="334" text-anchor="middle" fill="#64748B" font-size="10">Uptime Target</text>
+  <text x="290" y="354" text-anchor="middle" fill="#94A3B8" font-size="10">≤ 52 mnt downtime/thn</text>
+  <text x="290" y="372" text-anchor="middle" fill="#10B981" font-size="10" font-weight="700">Redundansi N+1</text>
+
+  <rect x="390" y="290" width="160" height="90" rx="10" fill="#0D1B2A" stroke="#1E293B" stroke-width="1"/>
+  <text x="470" y="316" text-anchor="middle" fill="#FBBF24" font-size="24" font-weight="900">1.2–1.4</text>
+  <text x="470" y="334" text-anchor="middle" fill="#64748B" font-size="10">PUE (Power Usage)</text>
+  <text x="470" y="354" text-anchor="middle" fill="#94A3B8" font-size="10">Sangat efisien energi</text>
+  <text x="470" y="372" text-anchor="middle" fill="#10B981" font-size="10" font-weight="700">Free Cooling ready</text>
+
+  <rect x="570" y="290" width="200" height="90" rx="10" fill="#0D1B2A" stroke="#1E293B" stroke-width="1"/>
+  <text x="670" y="316" text-anchor="middle" fill="#A78BFA" font-size="22" font-weight="900">±5% RH</text>
+  <text x="670" y="334" text-anchor="middle" fill="#64748B" font-size="10">Kontrol Kelembapan</text>
+  <text x="670" y="354" text-anchor="middle" fill="#94A3B8" font-size="10">Mencegah korosi &amp; ESD</text>
+  <text x="670" y="372" text-anchor="middle" fill="#10B981" font-size="10" font-weight="700">Humidifier terintegrasi</text>
+
+  <text x="768" y="412" text-anchor="end" fill="white" fill-opacity="0.3" font-size="9" font-weight="700">PAS HVAC</text>
+</svg>
