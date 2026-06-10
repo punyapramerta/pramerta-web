@@ -52,11 +52,14 @@ export async function POST(request: Request) {
       PANDUAN SEO & GEO (Generative Engine Optimization):
       1. Paragraf pertama wajib mengandung "Direct Answer" (Bottom Line Up Front) untuk menjawab langsung niat pencarian (search intent).
       2. Panjang artikel minimal 1000 kata. Harus berbobot, bahas spesifikasi, standar industri (SMACNA, ASHRAE, dll jika relevan).
-      3. Format Content wajib menggunakan tag HTML semantik:
-         - Jangan pakai tag <html>, <head>, atau <body>. Langsung mulai dengan isi konten.
-         - Gunakan <h2> dan <h3> untuk memecah subtopik agar mudah di-*skimming*.
-         - Gunakan <ul>/<li> untuk listicle keuntungan atau fitur.
-         - Beri penekanan <strong> pada frasa penting.
+      3. Format Content wajib menggunakan tag HTML semantik DENGAN TAILWIND CSS:
+         - HANYA kembalikan HTML murni TANPA markdown backticks (\`\`\`html ... \`\`\`).
+         - Paragraf intro: <p class="text-xl font-medium text-neutral-700 mb-8 leading-relaxed">
+         - Subjudul H2: <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 mt-12 mb-6">
+         - Subjudul H3: <h3 class="text-xl font-bold text-neutral-800 mt-8 mb-4">
+         - Paragraf biasa: <p class="mb-6 text-neutral-600 leading-relaxed">
+         - Unordered list: <ul class="list-disc pl-6 mb-8 space-y-3 text-neutral-600">
+         - Beri penekanan <strong class="font-bold text-neutral-800"> pada frasa penting.
       4. Akhiri dengan paragraf "Kesimpulan & Call to Action (CTA)" yang persuasif, ajak untuk konsultasi RFQ / Site Survey gratis dengan PAS HVAC.
     `;
 
