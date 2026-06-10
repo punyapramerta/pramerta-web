@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   const buffer = Buffer.from(await file.arrayBuffer());
   
-  let finalBuffer = buffer;
+  let finalBuffer: Buffer = buffer;
   let finalContentType = file.type;
   
   if (!isSvg) {
