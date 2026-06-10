@@ -515,8 +515,8 @@ export default function AdminBlogPage() {
               disabled={isPending}
               className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2 text-sm disabled:opacity-50 shadow-md"
             >
-              <span className="material-symbols-outlined text-sm">publish</span>
-              {isPending ? "Menyimpan..." : "Publish Artikel"}
+              <span className="material-symbols-outlined text-sm">{mode === "edit" ? "update" : "publish"}</span>
+              {isPending ? "Menyimpan..." : mode === "edit" ? "Update Artikel" : "Publish Artikel"}
             </button>
           </div>
         </div>

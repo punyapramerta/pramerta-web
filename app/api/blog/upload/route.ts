@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(filename);
-  return NextResponse.json({ url: data.publicUrl });
+  return NextResponse.json({ url: `${data.publicUrl}?t=${Date.now()}` });
 }
 
 export async function DELETE(req: NextRequest) {
