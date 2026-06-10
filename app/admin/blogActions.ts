@@ -78,36 +78,51 @@ function postToRow(post: BlogPost): Omit<BlogRow, "id" | "created_at"> {
 export async function getBlogPosts(): Promise<BlogPost[]> {
   if (!isSupabaseConfigured()) return [];
   const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .order("created_at", { ascending: false });
-  if (error) throw new Error(error.message);
-  return (data as BlogRow[]).map(rowToPost);
+  try {
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data as BlogRow[]).map(rowToPost);
+  } catch (err) {
+    console.error("Failed to fetch blog posts:", err);
+    return [];
+  }
 }
 
 export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
   if (!isSupabaseConfigured()) return [];
   const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("status", "published")
-    .order("published_at", { ascending: false });
-  if (error) throw new Error(error.message);
-  return (data as BlogRow[]).map(rowToPost);
+  try {
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .select("*")
+      .eq("status", "published")
+      .order("published_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data as BlogRow[]).map(rowToPost);
+  } catch (err) {
+    console.error("Failed to fetch published blog posts:", err);
+    return [];
+  }
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("slug", slug)
-    .single();
-  if (error) return null;
-  return rowToPost(data as BlogRow);
+  try {
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+    if (error) throw new Error(error.message);
+    return rowToPost(data as BlogRow);
+  } catch (err) {
+    console.error(`Failed to fetch blog post by slug ${slug}:`, err);
+    return null;
+  }
 }
 
 export async function addBlogPost(post: BlogPost) {

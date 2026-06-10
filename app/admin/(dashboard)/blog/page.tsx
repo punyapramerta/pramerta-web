@@ -46,6 +46,21 @@ const categoryStyles: Record<string, string> = {
   Teknologi: "bg-cyan-50 text-cyan-700",
 };
 
+const TARGET_KEYWORDS = [
+  "Kontraktor HVAC Indonesia",
+  "Sistem Tata Udara Industri",
+  "Distributor Resmi FRIMEC",
+  "Distributor Resmi GREE",
+  "Air Handling Unit (AHU) Cleanroom",
+  "Sistem VRF GREE",
+  "Water Cooled Chiller",
+  "Precision Air Conditioning (PAC) Data Center",
+  "Fabrikasi Ducting SMACNA",
+  "Jasa Instalasi HVAC Pabrik",
+  "Maintenance Chiller Industri",
+  "Textile Duct / Fabric Duct",
+];
+
 export default function AdminBlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,9 +70,15 @@ export default function AdminBlogPage() {
   const [form, setForm] = useState<BlogPost>(EMPTY_FORM);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [pendingStatus, setPendingStatus] = useState<"draft" | "published" | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // AI Generator States
+  const [genPurpose, setGenPurpose] = useState("Edukasi & Pembahasan Mendalam (SEO)");
+  const [genAudience, setGenAudience] = useState("B2B, Plant Manager, Engineer, Procurement");
+  const [genKeyword, setGenKeyword] = useState("");
+  const [genTone, setGenTone] = useState("Profesional, Teknis, Persuasif");
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -70,6 +91,7 @@ export default function AdminBlogPage() {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("slug", form.slug);
+      fd.append("keyword", slugify(form.targetKeyword || form.title || form.slug));
       const res = await fetch("/api/blog/upload", { method: "POST", body: fd });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Upload gagal");
@@ -90,7 +112,7 @@ export default function AdminBlogPage() {
       await fetch("/api/blog/upload", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: form.slug }),
+        body: JSON.stringify({ slug: form.slug, keyword: slugify(form.targetKeyword || form.title || form.slug) }),
       });
       setField("imageUrl", "");
     } finally {
@@ -130,6 +152,48 @@ export default function AdminBlogPage() {
     setEditSlug(post.slug);
     setMode("edit");
     setFeedback(null);
+  };
+
+  const handleGenerateAI = async () => {
+    if (!genKeyword) {
+      setFeedback({ type: "error", msg: "Silakan pilih Keyword Target di panel AI Generator terlebih dahulu." });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    setIsGenerating(true);
+    setFeedback(null);
+    try {
+      const res = await fetch("/api/blog/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          purpose: genPurpose,
+          audience: genAudience,
+          keyword: genKeyword,
+          tone: genTone,
+          title: form.title,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal menggenerate artikel");
+      
+      setForm((prev) => ({
+        ...prev,
+        title: data.title || prev.title,
+        slug: data.slug || prev.slug,
+        excerpt: data.excerpt || prev.excerpt,
+        metaTitle: data.metaTitle || prev.metaTitle,
+        metaDesc: data.metaDesc || prev.metaDesc,
+        content: data.content || prev.content,
+        targetKeyword: genKeyword,
+        readTime: "7 Menit Baca" // default suggestion
+      }));
+      setFeedback({ type: "success", msg: "Artikel berhasil di-generate AI! Silakan review, sesuaikan kategori, upload gambar hero, lalu Publish." });
+    } catch (error: any) {
+      setFeedback({ type: "error", msg: error.message });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleSave = (saveStatus: "draft" | "published") => {
@@ -181,13 +245,13 @@ export default function AdminBlogPage() {
 
   if (mode !== "none") {
     return (
-      <div className="max-w-3xl">
+      <div className="max-w-4xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-headline font-extrabold text-gray-900 mb-1">
               {mode === "add" ? "Tambah Artikel Baru" : "Edit Artikel"}
             </h1>
-            <p className="text-gray-500 text-sm">Tulis dan kelola konten blog.</p>
+            <p className="text-gray-500 text-sm">Tulis dan kelola konten blog untuk optimasi SEO.</p>
           </div>
           <button onClick={() => setMode("none")} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 font-bold transition-colors">
             <span className="material-symbols-outlined text-base">arrow_back</span>
@@ -201,10 +265,84 @@ export default function AdminBlogPage() {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* AI GENERATOR PANEL */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="material-symbols-outlined text-gray-500">settings_suggest</span>
+            <h2 className="text-xl font-bold text-gray-800">SEO & GEO AI Auto-Generator</h2>
+          </div>
+          <p className="text-sm text-gray-500 mb-6 max-w-2xl">
+            Isi preferensi di bawah ini dan biarkan AI Gemini menyusun draf artikel lengkap (Konten HTML, Judul, Slug, SEO Meta) secara otomatis berdasarkan <strong>Guideline SEO PAS HVAC</strong>.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Pilih Target Keyword (Tier 1 & 2) *</label>
+              <select 
+                value={genKeyword} 
+                onChange={(e) => setGenKeyword(e.target.value)}
+                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+              >
+                <option value="">-- Pilih Keyword dari Riset SEO --</option>
+                {TARGET_KEYWORDS.map(k => <option key={k} value={k}>{k}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Tujuan Artikel</label>
+              <input 
+                type="text" 
+                value={genPurpose} 
+                onChange={(e) => setGenPurpose(e.target.value)}
+                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400"
+                placeholder="Misal: Edukasi, Komparasi..."
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Target Audience Intent</label>
+              <input 
+                type="text" 
+                value={genAudience} 
+                onChange={(e) => setGenAudience(e.target.value)}
+                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Tone of Voice</label>
+              <input 
+                type="text" 
+                value={genTone} 
+                onChange={(e) => setGenTone(e.target.value)}
+                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400"
+              />
+            </div>
+          </div>
+          
+          <button 
+            onClick={handleGenerateAI}
+            disabled={isGenerating}
+            className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-wait w-full justify-center shadow-md"
+          >
+            {isGenerating ? (
+              <>
+                <span className="material-symbols-outlined animate-spin text-sm">sync</span>
+                Menyusun artikel komprehensif (~15 detik)...
+              </>
+            ) : (
+              <>
+                <span className="material-symbols-outlined text-sm">magic_button</span>
+                Buat Artikel Otomatis
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* FORM BIASA / HASIL GENERATE */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+          <h3 className="font-bold text-lg border-b pb-3 text-gray-800">Detail Artikel</h3>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Judul Artikel *</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Judul Artikel (H1) *</label>
               <input
                 type="text"
                 value={form.title}
@@ -214,7 +352,7 @@ export default function AdminBlogPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Slug *</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Slug URL *</label>
               <input
                 type="text"
                 value={form.slug}
@@ -240,7 +378,7 @@ export default function AdminBlogPage() {
                 value={form.readTime}
                 onChange={(e) => setField("readTime", e.target.value)}
                 className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
-                placeholder="5 Menit Baca"
+                placeholder="Misal: 5 Menit Baca"
               />
             </div>
             <div>
@@ -253,7 +391,7 @@ export default function AdminBlogPage() {
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Excerpt</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Excerpt (Ringkasan Pendek)</label>
               <textarea
                 rows={2}
                 value={form.excerpt}
@@ -263,7 +401,7 @@ export default function AdminBlogPage() {
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Gambar Featured</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Gambar Hero / Featured Image *</label>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -298,67 +436,52 @@ export default function AdminBlogPage() {
                       Hapus
                     </button>
                   </div>
-                  <div className="p-2 bg-gray-50 border-t border-gray-200">
-                    <p className="text-[10px] text-gray-400 truncate font-mono">{form.imageUrl}</p>
-                  </div>
                 </div>
               ) : (
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading || !form.slug}
-                  className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 text-gray-400 hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 text-gray-400 hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-gray-50"
                 >
                   <span className="material-symbols-outlined text-3xl">
                     {uploading ? "hourglass_empty" : "add_photo_alternate"}
                   </span>
                   <span className="text-sm font-bold">
-                    {uploading ? "Mengupload gambar..." : "Klik untuk upload gambar"}
+                    {uploading ? "Mengupload gambar..." : "Klik untuk upload gambar Hero"}
                   </span>
-                  <span className="text-xs">JPG, PNG, WEBP, AVIF, SVG · Maks 5MB</span>
-                  {!form.slug && (
-                    <span className="text-xs text-orange-500 font-bold">⚠ Isi Slug terlebih dahulu</span>
-                  )}
+                  <span className="text-xs">JPG, PNG, WEBP · Pastikan Slug sudah terisi</span>
                 </button>
               )}
-              <div className="mt-2">
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Atau masukkan URL manual</label>
-                <input
-                  type="text"
-                  value={form.imageUrl ?? ""}
-                  onChange={(e) => setField("imageUrl", e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2 text-xs focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition font-mono text-gray-600"
-                  placeholder="/images/blog/nama-gambar.svg atau https://..."
-                />
-              </div>
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Konten Artikel (HTML)</label>
+          <div className="pt-4">
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Konten Artikel Lengkap (HTML Semantik)</label>
             <textarea
-              rows={18}
+              rows={16}
               value={form.content}
               onChange={(e) => setField("content", e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition font-mono resize-y"
-              placeholder="<p>Konten HTML artikel...</p>"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition font-mono resize-y bg-gray-50 leading-relaxed"
+              placeholder="<h2>Judul Bagian</h2><p>Isi paragraf...</p>"
             />
           </div>
 
-          <div className="border-t border-gray-100 pt-5">
-            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">SEO Meta</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="border-t border-gray-100 pt-6">
+            <h3 className="font-bold text-lg mb-4 text-gray-800">On-Page SEO Optimization</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Meta Title</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Meta Title (Max 60 chars)</label>
                 <input
                   type="text"
                   value={form.metaTitle}
                   onChange={(e) => setField("metaTitle", e.target.value)}
                   className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
                 />
+                <p className="text-[10px] text-gray-400 mt-1">Saat ini: {form.metaTitle.length} karakter</p>
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Target Keyword</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Target Keyword Spesifik</label>
                 <input
                   type="text"
                   value={form.targetKeyword}
@@ -367,32 +490,33 @@ export default function AdminBlogPage() {
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Meta Description</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Meta Description (Max 160 chars)</label>
                 <textarea
                   rows={2}
                   value={form.metaDesc}
                   onChange={(e) => setField("metaDesc", e.target.value)}
                   className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition resize-none"
                 />
+                <p className="text-[10px] text-gray-400 mt-1">Saat ini: {form.metaDesc.length} karakter</p>
               </div>
             </div>
           </div>
 
-          <div className="flex gap-3 pt-2">
+          <div className="border-t border-gray-100 pt-6 flex gap-3">
             <button
               onClick={() => handleSave("draft")}
               disabled={isPending}
-              className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold px-6 py-2.5 rounded-xl transition-all text-sm disabled:opacity-50"
+              className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold px-6 py-3 rounded-xl transition-all text-sm disabled:opacity-50"
             >
-              Simpan Draft
+              Simpan sbg Draft
             </button>
             <button
               onClick={() => handleSave("published")}
               disabled={isPending}
-              className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm disabled:opacity-50"
+              className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2 text-sm disabled:opacity-50 shadow-md"
             >
               <span className="material-symbols-outlined text-sm">publish</span>
-              {isPending ? "Menyimpan..." : "Publish"}
+              {isPending ? "Menyimpan..." : "Publish Artikel"}
             </button>
           </div>
         </div>
@@ -405,14 +529,14 @@ export default function AdminBlogPage() {
       <div className="mb-8 flex justify-between items-end">
         <div>
           <h1 className="text-3xl font-headline font-extrabold text-gray-900 mb-2">Artikel Blog</h1>
-          <p className="text-gray-500">Kelola semua artikel yang ditampilkan di halaman blog.</p>
+          <p className="text-gray-500">Kelola artikel SEO, panduan teknis, dan insight industri HVAC.</p>
         </div>
         <button
           onClick={openAdd}
-          className="bg-primary hover:bg-primary/90 text-white font-bold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm"
+          className="bg-primary hover:bg-primary/90 text-white font-bold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 text-sm shadow-sm"
         >
           <span className="material-symbols-outlined text-sm">add</span>
-          Artikel Baru
+          Buat Artikel AI
         </button>
       </div>
 
@@ -423,11 +547,11 @@ export default function AdminBlogPage() {
       )}
 
       {loading ? (
-        <div className="text-center py-20 text-gray-400 font-bold">Memuat artikel...</div>
+        <div className="text-center py-20 text-gray-400 font-bold">Memuat data artikel...</div>
       ) : posts.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
           <span className="material-symbols-outlined text-5xl block mb-3">article</span>
-          <p className="font-bold">Belum ada artikel. Buat yang pertama!</p>
+          <p className="font-bold">Belum ada artikel SEO. Yuk buat menggunakan Gemini AI!</p>
         </div>
       ) : (
         <div className="space-y-3">

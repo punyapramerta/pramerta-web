@@ -24,19 +24,21 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.pramerta.co.id"),
   title: {
     template: "%s | PAS HVAC",
-    default: "PAS HVAC | Solusi HVAC Industri Terpercaya",
+    default: "PAS HVAC | Solusi HVAC Industri Terpercaya — Surabaya & Jakarta",
   },
   description:
-    "PT. Pratama Amerta Solusi — Authorized Distributor FRIMEC & Gree. Menyediakan solusi HVAC industri: Air Handling Unit, Chiller, VRF System, Sheet Metal Ducting, dan Textile Duct untuk berbagai sektor industri di Indonesia.",
+    "PT. Pratama Amerta Solusi — Authorized Distributor FRIMEC & GREE. Air Handling Unit, Chiller, VRF, Precision AC, dan Ducting untuk industri Indonesia. Konsultasi gratis!",
   keywords: [
     "HVAC Industri Indonesia",
+    "Kontraktor HVAC Indonesia",
+    "Solusi HVAC Industri Terpercaya",
+    "Distributor HVAC Indonesia",
+    "PAS HVAC",
+    "Pratama Amerta Solusi",
     "Air Handling Unit Surabaya",
     "Chiller System Indonesia",
     "FRIMEC Distributor Indonesia",
-    "Gree VRF System",
-    "Sheet Metal Ducting SMACNA",
-    "Textile Duct Fabric Duct",
-    "PAS HVAC Pratama Amerta Solusi",
+    "Gree VRF System"
   ],
   authors: [{ name: "PT. Pratama Amerta Solusi", url: "https://www.pramerta.co.id" }],
   creator: "PT. Pratama Amerta Solusi",
@@ -45,9 +47,9 @@ export const metadata: Metadata = {
     locale: "id_ID",
     url: "https://www.pramerta.co.id",
     siteName: "PAS HVAC | Solusi HVAC Industri Terpercaya",
-    title: "PAS HVAC | Solusi HVAC Industri Terpercaya",
+    title: "PAS HVAC | Solusi HVAC Industri Terpercaya — Surabaya & Jakarta",
     description:
-      "Authorized Distributor FRIMEC & Gree. Solusi HVAC lengkap untuk industri manufaktur, F&B, energi, dan sipil di Indonesia.",
+      "PT. Pratama Amerta Solusi — Authorized Distributor FRIMEC & GREE. Air Handling Unit, Chiller, VRF, Precision AC, dan Ducting untuk industri Indonesia. Konsultasi gratis!",
     images: [
       {
         url: "/images/og-image.jpg",
@@ -59,8 +61,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PAS HVAC | Solusi HVAC Industri Terpercaya",
-    description: "Authorized Distributor FRIMEC & Gree untuk solusi HVAC industri di Indonesia.",
+    title: "PAS HVAC | Solusi HVAC Industri Terpercaya — Surabaya & Jakarta",
+    description: "PT. Pratama Amerta Solusi — Authorized Distributor FRIMEC & GREE. Air Handling Unit, Chiller, VRF, Precision AC, dan Ducting untuk industri Indonesia.",
     images: ["/images/og-image.jpg"],
   },
   alternates: {
@@ -122,6 +124,7 @@ export default function RootLayout({
                 "url": "https://www.pramerta.co.id",
                 "telephone": "+628155503777",
                 "priceRange": "$$",
+                "description": "Authorized Distributor FRIMEC & GREE. Melayani procurement, instalasi, dan maintenance HVAC industri, AHU, Chiller, VRF, dan ducting.",
                 "address": {
                   "@type": "PostalAddress",
                   "streetAddress": "Jl. Raya Menganti Jeruk No.240",

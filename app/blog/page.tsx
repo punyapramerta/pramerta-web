@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import BlogSidebar from "@/components/blog/BlogSidebar";
 import { getPublishedBlogPosts } from "@/app/admin/blogActions";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
 export const metadata: Metadata = {

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createServerClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { portfolioData } from "@/lib/repositories/dataRepository";
 import type { PortfolioItem } from "@/lib/repositories/dataRepository";
 
 // ─── DB row ↔ PortfolioItem mappers ──────────────────────────
@@ -70,14 +71,19 @@ function itemToRow(item: PortfolioItem): Omit<PortfolioRow, "id" | "created_at" 
 // ─── Public actions ───────────────────────────────────────────
 
 export async function getPortfolioItems(): Promise<PortfolioItem[]> {
-  if (!isSupabaseConfigured()) return [];
+  if (!isSupabaseConfigured()) return portfolioData;
   const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from("portfolios")
-    .select("*")
-    .order("created_at", { ascending: true });
-  if (error) throw new Error(error.message);
-  return (data as PortfolioRow[]).map(rowToItem);
+  try {
+    const { data, error } = await supabase
+      .from("portfolios")
+      .select("*")
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    return (data as PortfolioRow[]).map(rowToItem);
+  } catch (err) {
+    console.error("Failed to fetch portfolios:", err);
+    return portfolioData;
+  }
 }
 
 export async function addPortfolioItem(item: PortfolioItem) {

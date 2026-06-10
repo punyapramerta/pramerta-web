@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { portfolioData } from "@/lib/repositories/dataRepository";
+import { portfolioData, productsData } from "@/lib/repositories/dataRepository";
 
 const BASE_URL = "https://www.pramerta.co.id";
 
@@ -9,6 +9,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(),
     changeFrequency: "monthly" as const,
     priority: 0.7,
+  }));
+
+  const dynamicProductUrls = productsData.map((product) => ({
+    url: `${BASE_URL}${product.href}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.85,
   }));
 
   return [
@@ -30,12 +37,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 0.8,
     },
-    {
-      url: `${BASE_URL}/produk/pac`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.85,
-    },
+    ...dynamicProductUrls,
     ...dynamicPortfolioUrls,
   ];
 }

@@ -16,8 +16,8 @@ export const companyData = {
 
 export const heroData = {
   badge: "Authorized Distributor FRIMEC & Gree",
-  title: "Solusi HVAC Industri yang Tepat, Cepat, dan Terpercaya",
-  accentWord: "Tepat, Cepat,",
+  title: "Solusi Tata Udara Industri & Kontraktor HVAC Terpercaya",
+  accentWord: "Kontraktor HVAC",
   description:
     "Kami adalah perusahaan engineering HVAC yang berfokus pada inovasi dan teknologi terkini. Melayani procurement, instalasi, maintenance, Precision Air Conditioning (PAC), serta ducting untuk berbagai sektor industri — mulai dari data center, cleanroom, hingga laboratorium.",
   bullets: [
@@ -80,21 +80,21 @@ export const testimonialsData = [
 
 export const leadFormData = {
   left: {
-    badge: "Konsultasi Gratis",
-    title: "Siap Meningkatkan Sistem HVAC Industri Anda?",
+    badge: "Konsultasi Gratis & Site Survey",
+    title: "Mencari Kontraktor HVAC B2B Terpercaya?",
     description:
-      "Hubungi konsultan teknis kami hari ini untuk mendapatkan penawaran khusus atau survei lokasi gratis.",
+      "Dapatkan solusi tata udara industri yang optimal. Hubungi konsultan teknis kami hari ini untuk request quotation (RFQ) atau survei lokasi gratis.",
     benefits: [
       { icon: "call", text: "031-995-48097", description: "Telepon Office" },
       { icon: "mail", text: "Sales@pramerta.co.id", description: "Email Sales" },
     ],
   },
   right: {
-    title: "Minta Penawaran Cepat",
-    subtitle: "Ceritakan kebutuhan HVAC Anda...",
+    title: "Request for Quotation (RFQ)",
+    subtitle: "Ceritakan kebutuhan proyek HVAC Anda...",
     successTitle: "Permintaan Terkirim!",
-    successDescription: "Terima kasih, tim kami akan segera menghubungi Anda.",
-    submitButton: "Kirim Penawaran",
+    successDescription: "Terima kasih, tim sales engineer kami akan segera memproses RFQ Anda.",
+    submitButton: "Kirim Request (RFQ)",
     whatsappButton: "WhatsApp Us",
   },
   options: [

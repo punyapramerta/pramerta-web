@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import sharp from "sharp";
 
 const BUCKET = "blog-images";
 const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "avif", "svg"];
@@ -8,6 +9,7 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
   const slug = formData.get("slug") as string | null;
+  const keyword = formData.get("keyword") as string | null;
 
   if (!file || !slug) {
     return NextResponse.json({ error: "Missing file or slug" }, { status: 400 });
@@ -19,18 +21,35 @@ export async function POST(req: NextRequest) {
   }
 
   const supabase = createServerClient();
-  const filename = `${slug}.${ext}`;
+  const baseName = keyword || slug;
+  
+  // Use .webp for everything except SVG
+  const isSvg = ext === "svg";
+  const finalExt = isSvg ? "svg" : "webp";
+  const filename = `${baseName}.${finalExt}`;
 
-  // Remove existing images for this slug
+  // Remove existing images for this slug or keyword to avoid orphans
+  const pathsToRemove: string[] = [];
   for (const e of ALLOWED_EXT) {
-    await supabase.storage.from(BUCKET).remove([`${slug}.${e}`]);
+    pathsToRemove.push(`${slug}.${e}`);
+    if (keyword && keyword !== slug) pathsToRemove.push(`${keyword}.${e}`);
   }
+  await supabase.storage.from(BUCKET).remove(pathsToRemove);
 
   const buffer = Buffer.from(await file.arrayBuffer());
+  
+  let finalBuffer = buffer;
+  let finalContentType = file.type;
+  
+  if (!isSvg) {
+    finalBuffer = await sharp(buffer).webp({ quality: 80 }).toBuffer();
+    finalContentType = "image/webp";
+  }
+
   const { error } = await supabase.storage
     .from(BUCKET)
-    .upload(filename, buffer, {
-      contentType: file.type,
+    .upload(filename, finalBuffer, {
+      contentType: finalContentType,
       upsert: true,
     });
 
@@ -43,13 +62,20 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const { slug } = await req.json();
+  const { slug, keyword } = await req.json();
   if (!slug) return NextResponse.json({ error: "Missing slug" }, { status: 400 });
 
   const supabase = createServerClient();
+  const pathsToRemove: string[] = [];
+  
+  for (const e of ALLOWED_EXT) {
+    pathsToRemove.push(`${slug}.${e}`);
+    if (keyword && keyword !== slug) pathsToRemove.push(`${keyword}.${e}`);
+  }
+
   await supabase.storage
     .from(BUCKET)
-    .remove(ALLOWED_EXT.map((e) => `${slug}.${e}`));
+    .remove(pathsToRemove);
 
   return NextResponse.json({ success: true });
 }
