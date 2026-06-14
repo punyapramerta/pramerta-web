@@ -73,7 +73,14 @@ export default function AdminBlogPage() {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Content Editor States
+  type ArticleBlock = { id: string; type: "intro" | "h2" | "h3" | "p" | "ul" | "quote"; content: string };
+  const [contentMode, setContentMode] = useState<"html" | "visual">("html");
+  const [blocks, setBlocks] = useState<ArticleBlock[]>([]);
+
   // AI Generator States
+  const [aiMode, setAiMode] = useState<"auto" | "optimize">("auto");
+  const [rawText, setRawText] = useState("");
   const [genPurpose, setGenPurpose] = useState("Edukasi & Pembahasan Mendalam (SEO)");
   const [genAudience, setGenAudience] = useState("B2B, Plant Manager, Engineer, Procurement");
   const [genKeyword, setGenKeyword] = useState("");
@@ -145,6 +152,8 @@ export default function AdminBlogPage() {
     setEditSlug(null);
     setMode("add");
     setFeedback(null);
+    setContentMode("visual");
+    setBlocks([]);
   };
 
   const openEdit = (post: BlogPost) => {
@@ -152,6 +161,53 @@ export default function AdminBlogPage() {
     setEditSlug(post.slug);
     setMode("edit");
     setFeedback(null);
+    setContentMode("html");
+    setBlocks([]);
+  };
+
+  const blocksToHtml = (currentBlocks: ArticleBlock[]) => {
+    return currentBlocks.map(b => {
+      if (!b.content.trim()) return "";
+      switch (b.type) {
+        case "intro": return `<p class="text-xl font-medium text-neutral-700 mb-8 leading-relaxed">${b.content}</p>`;
+        case "h2": return `<h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 mt-12 mb-6">${b.content}</h2>`;
+        case "h3": return `<h3 class="text-xl font-bold text-neutral-800 mt-8 mb-4">${b.content}</h3>`;
+        case "p": return `<p class="mb-6 text-neutral-600 leading-relaxed">${b.content}</p>`;
+        case "ul": 
+          const listItems = b.content.split("\n").filter(l => l.trim() !== "").map(l => `<li>${l.replace(/^- /, "")}</li>`).join("");
+          return `<ul class="list-disc pl-6 mb-8 space-y-3 text-neutral-600">${listItems}</ul>`;
+        case "quote":
+          return `<div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-xl mb-8"><p class="text-blue-900 font-medium italic text-lg leading-relaxed">"${b.content}"</p><p class="text-blue-600 text-sm font-bold mt-3">— Tim Engineer PAS HVAC</p></div>`;
+        default: return "";
+      }
+    }).filter(Boolean).join("\n");
+  };
+
+  const updateBlocksToForm = (newBlocks: ArticleBlock[]) => {
+    setBlocks(newBlocks);
+    setField("content", blocksToHtml(newBlocks));
+  };
+
+  const addBlock = (type: ArticleBlock["type"]) => {
+    updateBlocksToForm([...blocks, { id: Math.random().toString(36).slice(2, 9), type, content: "" }]);
+  };
+
+  const updateBlock = (id: string, newContent: string) => {
+    updateBlocksToForm(blocks.map(b => b.id === id ? { ...b, content: newContent } : b));
+  };
+
+  const removeBlock = (id: string) => {
+    updateBlocksToForm(blocks.filter(b => b.id !== id));
+  };
+  
+  const moveBlock = (index: number, direction: -1 | 1) => {
+    const newBlocks = [...blocks];
+    if (index + direction >= 0 && index + direction < newBlocks.length) {
+      const temp = newBlocks[index];
+      newBlocks[index] = newBlocks[index + direction];
+      newBlocks[index + direction] = temp;
+      updateBlocksToForm(newBlocks);
+    }
   };
 
   const handleGenerateAI = async () => {
@@ -189,6 +245,46 @@ export default function AdminBlogPage() {
         readTime: "7 Menit Baca" // default suggestion
       }));
       setFeedback({ type: "success", msg: "Artikel berhasil di-generate AI! Silakan review, sesuaikan kategori, upload gambar hero, lalu Publish." });
+    } catch (error: any) {
+      setFeedback({ type: "error", msg: error.message });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleOptimizeRawText = async () => {
+    if (!rawText || !genKeyword) {
+      setFeedback({ type: "error", msg: "Silakan isi Teks Mentah dan pilih Target Keyword terlebih dahulu." });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    setIsGenerating(true);
+    setFeedback(null);
+    try {
+      const res = await fetch("/api/blog/optimize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rawText,
+          keyword: genKeyword,
+          title: form.title,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal mengoptimasi artikel");
+      
+      setForm((prev) => ({
+        ...prev,
+        title: data.title || prev.title,
+        slug: data.slug || prev.slug,
+        excerpt: data.excerpt || prev.excerpt,
+        metaTitle: data.metaTitle || prev.metaTitle,
+        metaDesc: data.metaDesc || prev.metaDesc,
+        content: data.content || prev.content,
+        targetKeyword: genKeyword,
+        readTime: "7 Menit Baca"
+      }));
+      setFeedback({ type: "success", msg: "Artikel berhasil dioptimasi AI! Silakan review, sesuaikan kategori, upload gambar hero, lalu Publish." });
     } catch (error: any) {
       setFeedback({ type: "error", msg: error.message });
     } finally {
@@ -271,66 +367,110 @@ export default function AdminBlogPage() {
             <span className="material-symbols-outlined text-gray-500">settings_suggest</span>
             <h2 className="text-xl font-bold text-gray-800">SEO & GEO AI Auto-Generator</h2>
           </div>
+
+          <div className="flex bg-gray-100 p-1 rounded-xl mb-6 inline-flex">
+            <button
+              onClick={() => setAiMode("auto")}
+              className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${aiMode === "auto" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+            >
+              Buat Artikel Otomatis
+            </button>
+            <button
+              onClick={() => setAiMode("optimize")}
+              className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${aiMode === "optimize" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+            >
+              Optimasi Teks Mentah
+            </button>
+          </div>
+
           <p className="text-sm text-gray-500 mb-6 max-w-2xl">
-            Isi preferensi di bawah ini dan biarkan AI Gemini menyusun draf artikel lengkap (Konten HTML, Judul, Slug, SEO Meta) secara otomatis berdasarkan <strong>Guideline SEO PAS HVAC</strong>.
+            {aiMode === "auto" 
+              ? "Isi preferensi di bawah ini dan biarkan AI Gemini menyusun draf artikel lengkap (Konten HTML, Judul, Slug, SEO Meta) secara otomatis berdasarkan Guideline SEO PAS HVAC."
+              : "Paste teks mentah artikel Anda di bawah ini, dan AI akan merapikannya menjadi artikel HTML SEO siap tayang."}
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Pilih Target Keyword (Tier 1 & 2) *</label>
-              <select 
-                value={genKeyword} 
-                onChange={(e) => setGenKeyword(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
-              >
-                <option value="">-- Pilih Keyword dari Riset SEO --</option>
-                {TARGET_KEYWORDS.map(k => <option key={k} value={k}>{k}</option>)}
-              </select>
+          {aiMode === "auto" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Pilih Target Keyword (Tier 1 & 2) *</label>
+                <select 
+                  value={genKeyword} 
+                  onChange={(e) => setGenKeyword(e.target.value)}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                >
+                  <option value="">-- Pilih Keyword dari Riset SEO --</option>
+                  {TARGET_KEYWORDS.map(k => <option key={k} value={k}>{k}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Tujuan Artikel</label>
+                <input 
+                  type="text" 
+                  value={genPurpose} 
+                  onChange={(e) => setGenPurpose(e.target.value)}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400"
+                  placeholder="Misal: Edukasi, Komparasi..."
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Target Audience Intent</label>
+                <input 
+                  type="text" 
+                  value={genAudience} 
+                  onChange={(e) => setGenAudience(e.target.value)}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Tone of Voice</label>
+                <input 
+                  type="text" 
+                  value={genTone} 
+                  onChange={(e) => setGenTone(e.target.value)}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Tujuan Artikel</label>
-              <input 
-                type="text" 
-                value={genPurpose} 
-                onChange={(e) => setGenPurpose(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400"
-                placeholder="Misal: Edukasi, Komparasi..."
-              />
+          ) : (
+            <div className="grid grid-cols-1 gap-5 mb-6">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Pilih Target Keyword (Tier 1 & 2) *</label>
+                <select 
+                  value={genKeyword} 
+                  onChange={(e) => setGenKeyword(e.target.value)}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+                >
+                  <option value="">-- Pilih Keyword dari Riset SEO --</option>
+                  {TARGET_KEYWORDS.map(k => <option key={k} value={k}>{k}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Teks Mentah / Raw Copy *</label>
+                <textarea 
+                  rows={8}
+                  value={rawText} 
+                  onChange={(e) => setRawText(e.target.value)}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400 bg-gray-50 resize-y"
+                  placeholder="Paste artikel mentah Anda di sini..."
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Target Audience Intent</label>
-              <input 
-                type="text" 
-                value={genAudience} 
-                onChange={(e) => setGenAudience(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Tone of Voice</label>
-              <input 
-                type="text" 
-                value={genTone} 
-                onChange={(e) => setGenTone(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400"
-              />
-            </div>
-          </div>
+          )}
           
           <button 
-            onClick={handleGenerateAI}
+            onClick={aiMode === "auto" ? handleGenerateAI : handleOptimizeRawText}
             disabled={isGenerating}
             className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-wait w-full justify-center shadow-md"
           >
             {isGenerating ? (
               <>
                 <span className="material-symbols-outlined animate-spin text-sm">sync</span>
-                Menyusun artikel komprehensif (~15 detik)...
+                {aiMode === "auto" ? "Menyusun artikel komprehensif (~15 detik)..." : "Mengoptimasi artikel (~15 detik)..."}
               </>
             ) : (
               <>
                 <span className="material-symbols-outlined text-sm">magic_button</span>
-                Buat Artikel Otomatis
+                {aiMode === "auto" ? "Buat Artikel Otomatis" : "Optimasi Artikel dengan AI"}
               </>
             )}
           </button>
@@ -456,15 +596,124 @@ export default function AdminBlogPage() {
             </div>
           </div>
 
-          <div className="pt-4">
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Konten Artikel Lengkap (HTML Semantik)</label>
-            <textarea
-              rows={16}
-              value={form.content}
-              onChange={(e) => setField("content", e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition font-mono resize-y bg-gray-50 leading-relaxed"
-              placeholder="<h2>Judul Bagian</h2><p>Isi paragraf...</p>"
-            />
+          <div className="pt-6 border-t border-gray-100">
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest">Konten Artikel Lengkap</label>
+              <div className="flex bg-gray-100 p-1 rounded-lg">
+                <button
+                  onClick={() => setContentMode("visual")}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${contentMode === "visual" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                >
+                  Mode Visual (Per Part)
+                </button>
+                <button
+                  onClick={() => setContentMode("html")}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${contentMode === "html" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                >
+                  Mode HTML Mentah
+                </button>
+              </div>
+            </div>
+
+            {contentMode === "visual" ? (
+              <div className="space-y-2 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+                {blocks.length === 0 && (
+                  <div className="text-center py-10 bg-white border border-dashed border-gray-200 rounded-xl text-gray-400">
+                    <span className="material-symbols-outlined text-3xl mb-2">view_agenda</span>
+                    <p className="text-sm font-bold">Belum ada konten.</p>
+                    <p className="text-xs">Mulai dengan menambahkan blok di bawah.</p>
+                  </div>
+                )}
+                {blocks.map((block, i) => (
+                  <div key={block.id} className="relative group bg-white border border-transparent hover:border-gray-200 focus-within:border-primary/30 rounded-2xl p-6 transition-all shadow-sm">
+                    <div className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity flex items-center gap-1 bg-white border border-gray-200 rounded-lg shadow-sm p-1 z-10">
+                      <button onClick={() => moveBlock(i, -1)} disabled={i === 0} className="p-1.5 hover:bg-gray-50 rounded text-gray-400 hover:text-primary disabled:opacity-30"><span className="material-symbols-outlined text-[16px] block">arrow_upward</span></button>
+                      <button onClick={() => moveBlock(i, 1)} disabled={i === blocks.length - 1} className="p-1.5 hover:bg-gray-50 rounded text-gray-400 hover:text-primary disabled:opacity-30"><span className="material-symbols-outlined text-[16px] block">arrow_downward</span></button>
+                      <div className="w-px h-4 bg-gray-200 mx-1"></div>
+                      <button onClick={() => removeBlock(block.id)} className="p-1.5 hover:bg-red-50 rounded text-gray-400 hover:text-red-600"><span className="material-symbols-outlined text-[16px] block">delete</span></button>
+                    </div>
+                    
+                    {block.type === 'intro' && (
+                      <textarea 
+                        rows={3} 
+                        value={block.content} 
+                        onChange={(e) => updateBlock(block.id, e.target.value)} 
+                        className="w-full text-xl font-medium text-neutral-700 leading-relaxed resize-y focus:outline-none bg-transparent placeholder:text-gray-300" 
+                        placeholder="Tulis paragraf pembuka (Intro) di sini..." 
+                      />
+                    )}
+                    {block.type === 'h2' && (
+                      <input 
+                        type="text" 
+                        value={block.content} 
+                        onChange={(e) => updateBlock(block.id, e.target.value)} 
+                        className="w-full text-2xl sm:text-3xl font-bold text-neutral-900 focus:outline-none bg-transparent placeholder:text-gray-300" 
+                        placeholder="Tulis Subjudul H2..." 
+                      />
+                    )}
+                    {block.type === 'h3' && (
+                      <input 
+                        type="text" 
+                        value={block.content} 
+                        onChange={(e) => updateBlock(block.id, e.target.value)} 
+                        className="w-full text-xl font-bold text-neutral-800 focus:outline-none bg-transparent placeholder:text-gray-300" 
+                        placeholder="Tulis Subjudul H3..." 
+                      />
+                    )}
+                    {block.type === 'p' && (
+                      <textarea 
+                        rows={4} 
+                        value={block.content} 
+                        onChange={(e) => updateBlock(block.id, e.target.value)} 
+                        className="w-full text-neutral-600 leading-relaxed resize-y focus:outline-none bg-transparent placeholder:text-gray-300" 
+                        placeholder="Tulis isi paragraf di sini..." 
+                      />
+                    )}
+                    {block.type === 'ul' && (
+                      <div className="flex gap-3">
+                        <span className="material-symbols-outlined text-neutral-400 mt-1">list</span>
+                        <textarea 
+                          rows={4} 
+                          value={block.content} 
+                          onChange={(e) => updateBlock(block.id, e.target.value)} 
+                          className="w-full text-neutral-600 leading-relaxed resize-y focus:outline-none bg-transparent placeholder:text-gray-300" 
+                          placeholder="List item 1&#10;List item 2&#10;List item 3..." 
+                        />
+                      </div>
+                    )}
+                    {block.type === 'quote' && (
+                      <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-xl">
+                        <textarea 
+                          rows={3} 
+                          value={block.content} 
+                          onChange={(e) => updateBlock(block.id, e.target.value)} 
+                          className="w-full text-blue-900 font-medium italic text-lg leading-relaxed resize-y focus:outline-none bg-transparent placeholder:text-blue-300" 
+                          placeholder="Tulis isi kutipan / quote penting..." 
+                        />
+                        <p className="text-blue-600 text-sm font-bold mt-3">— Tim Engineer PAS HVAC</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                <div className="flex flex-wrap gap-2 pt-4 justify-center">
+                  <button type="button" onClick={() => addBlock("intro")} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-gray-700 hover:bg-white shadow-sm border border-gray-200 hover:border-primary transition-all"><span className="material-symbols-outlined text-[16px] text-gray-400">format_quote</span> + Intro</button>
+                  <button type="button" onClick={() => addBlock("h2")} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-gray-700 hover:bg-white shadow-sm border border-gray-200 hover:border-primary transition-all"><span className="material-symbols-outlined text-[16px] text-gray-400">title</span> + H2</button>
+                  <button type="button" onClick={() => addBlock("h3")} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-gray-700 hover:bg-white shadow-sm border border-gray-200 hover:border-primary transition-all"><span className="material-symbols-outlined text-[16px] text-gray-400">text_fields</span> + H3</button>
+                  <button type="button" onClick={() => addBlock("p")} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-gray-700 hover:bg-white shadow-sm border border-gray-200 hover:border-primary transition-all"><span className="material-symbols-outlined text-[16px] text-gray-400">notes</span> + Paragraf</button>
+                  <button type="button" onClick={() => addBlock("ul")} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-gray-700 hover:bg-white shadow-sm border border-gray-200 hover:border-primary transition-all"><span className="material-symbols-outlined text-[16px] text-gray-400">format_list_bulleted</span> + Bullet List</button>
+                  <button type="button" onClick={() => addBlock("quote")} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-blue-700 hover:bg-blue-50 shadow-sm border border-blue-200 hover:border-blue-400 transition-all bg-white"><span className="material-symbols-outlined text-[16px] text-blue-400">format_quote</span> + Quote Block</button>
+                </div>
+              </div>
+            ) : (
+              <textarea
+                rows={16}
+                value={form.content}
+                onChange={(e) => setField("content", e.target.value)}
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition font-mono resize-y bg-gray-50 leading-relaxed"
+                placeholder="<h2>Judul Bagian</h2><p>Isi paragraf...</p>"
+              />
+            )}
           </div>
 
           <div className="border-t border-gray-100 pt-6">
