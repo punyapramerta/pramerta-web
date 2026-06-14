@@ -92,7 +92,7 @@ export default async function SinglePostPage({ params }: Props) {
               {/* Featured Image */}
               <div className="aspect-video w-full bg-neutral-200 rounded-3xl mb-12 overflow-hidden relative flex items-center justify-center">
                 {post.imageUrl ? (
-                  <img src={post.imageUrl} alt={post.title} className="absolute inset-0 w-full h-full object-cover" />
+                  <img src={post.imageUrl} alt={post.title} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: `50% ${post.imagePositionY ?? 50}%` }} />
                 ) : (
                   <span className="material-symbols-outlined text-6xl text-neutral-400">image</span>
                 )}

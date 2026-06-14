@@ -12,6 +12,7 @@ export type BlogPost = {
   content: string;
   excerpt: string;
   imageUrl?: string;
+  imagePositionY?: number;
   metaTitle: string;
   metaDesc: string;
   targetKeyword: string;
@@ -30,6 +31,7 @@ type BlogRow = {
   content: string | null;
   excerpt: string | null;
   image_url: string | null;
+  image_position_y: number | null;
   meta_title: string | null;
   meta_desc: string | null;
   target_keyword: string | null;
@@ -48,6 +50,7 @@ function rowToPost(row: BlogRow): BlogPost {
     content: row.content ?? "",
     excerpt: row.excerpt ?? "",
     imageUrl: row.image_url ?? undefined,
+    imagePositionY: row.image_position_y ?? 50,
     metaTitle: row.meta_title ?? "",
     metaDesc: row.meta_desc ?? "",
     targetKeyword: row.target_keyword ?? "",
@@ -67,6 +70,7 @@ function postToRow(post: BlogPost): Omit<BlogRow, "id" | "created_at"> {
     content: post.content,
     excerpt: post.excerpt,
     image_url: post.imageUrl ?? null,
+    image_position_y: post.imagePositionY ?? 50,
     meta_title: post.metaTitle,
     meta_desc: post.metaDesc,
     target_keyword: post.targetKeyword,

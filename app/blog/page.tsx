@@ -82,7 +82,7 @@ export default async function BlogPage() {
                       <div className="aspect-square bg-neutral-100 relative overflow-hidden flex items-center justify-center">
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
                         {post.imageUrl ? (
-                          <img src={post.imageUrl} alt={post.title} className="absolute inset-0 w-full h-full object-cover" />
+                          <img src={post.imageUrl} alt={post.title} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: `50% ${post.imagePositionY ?? 50}%` }} />
                         ) : (
                           <span className="material-symbols-outlined text-5xl text-neutral-300 group-hover:scale-110 group-hover:text-primary-300 transition-all duration-500 relative z-0">image</span>
                         )}

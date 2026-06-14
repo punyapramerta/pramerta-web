@@ -78,6 +78,11 @@ export default function AdminBlogPage() {
   const [contentMode, setContentMode] = useState<"html" | "visual">("html");
   const [blocks, setBlocks] = useState<ArticleBlock[]>([]);
 
+  // Image Drag State
+  const [isDraggingImage, setIsDraggingImage] = useState(false);
+  const dragStartY = useRef<number>(0);
+  const dragStartPos = useRef<number>(50);
+
   // AI Generator States
   const [aiMode, setAiMode] = useState<"auto" | "optimize">("auto");
   const [rawText, setRawText] = useState("");
@@ -550,27 +555,59 @@ export default function AdminBlogPage() {
                 className="hidden"
               />
               {form.imageUrl ? (
-                <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                <div 
+                  className={`relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50 group ${isDraggingImage ? 'cursor-grabbing' : 'cursor-grab'}`}
+                  onMouseDown={(e) => {
+                    if (uploading) return;
+                    setIsDraggingImage(true);
+                    dragStartY.current = e.clientY;
+                    dragStartPos.current = form.imagePositionY ?? 50;
+                  }}
+                  onMouseMove={(e) => {
+                    if (!isDraggingImage) return;
+                    const deltaY = e.clientY - dragStartY.current;
+                    // Membalik deltaY agar terasa natural: geser mouse ke atas -> fokus gambar ke bawah (persen naik)
+                    let newPos = dragStartPos.current - (deltaY * 0.2);
+                    newPos = Math.max(0, Math.min(100, Math.round(newPos)));
+                    setField("imagePositionY", newPos);
+                  }}
+                  onMouseUp={() => setIsDraggingImage(false)}
+                  onMouseLeave={() => setIsDraggingImage(false)}
+                >
                   <img
                     src={form.imageUrl}
                     alt="preview"
-                    className="w-full h-48 object-cover"
+                    className="w-full h-48 object-cover pointer-events-none select-none"
+                    style={{ objectPosition: `50% ${form.imagePositionY ?? 50}%` }}
+                    draggable={false}
                   />
-                  <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition-colors group flex items-center justify-center gap-3">
+                  {!isDraggingImage && (
+                    <div className="absolute top-3 left-3 bg-black/60 text-white text-xs px-2.5 py-1.5 rounded-lg font-bold tracking-wide flex items-center gap-1.5 opacity-80 backdrop-blur-sm pointer-events-none">
+                      <span className="material-symbols-outlined text-[16px]">swipe_vertical</span> 
+                      Geser Gambar
+                    </div>
+                  )}
+                  <div className={`absolute inset-0 bg-black/0 hover:bg-black/30 transition-colors flex items-center justify-center gap-3 ${isDraggingImage ? 'hidden' : 'opacity-0 group-hover:opacity-100'}`}>
                     <button
                       type="button"
-                      onClick={() => fileInputRef.current?.click()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        fileInputRef.current?.click();
+                      }}
                       disabled={uploading}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-gray-800 font-bold text-xs px-4 py-2 rounded-lg shadow-lg flex items-center gap-1.5 hover:bg-gray-50 disabled:opacity-50"
+                      className="bg-white text-gray-800 font-bold text-xs px-4 py-2 rounded-lg shadow-lg flex items-center gap-1.5 hover:bg-gray-50 disabled:opacity-50 transition-transform hover:scale-105 active:scale-95"
                     >
                       <span className="material-symbols-outlined text-sm">upload</span>
                       {uploading ? "Mengupload..." : "Ganti Gambar"}
                     </button>
                     <button
                       type="button"
-                      onClick={handleImageDelete}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleImageDelete();
+                      }}
                       disabled={uploading}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity bg-red-600 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-lg flex items-center gap-1.5 hover:bg-red-700 disabled:opacity-50"
+                      className="bg-red-600 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-lg flex items-center gap-1.5 hover:bg-red-700 disabled:opacity-50 transition-transform hover:scale-105 active:scale-95"
                     >
                       <span className="material-symbols-outlined text-sm">delete</span>
                       Hapus
