@@ -144,7 +144,7 @@ export default function AdminBlogPage() {
 
   useEffect(() => { load(); }, []);
 
-  const setField = (key: keyof BlogPost, value: string) => {
+  const setField = (key: keyof BlogPost, value: any) => {
     setForm((prev) => {
       const next = { ...prev, [key]: value };
       if (key === "title" && mode === "add") next.slug = slugify(value);
