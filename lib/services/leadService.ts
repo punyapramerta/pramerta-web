@@ -39,7 +39,7 @@ export const leadService = {
     // 2. Format Message
     let message = "";
     if (source === "hero") {
-      message = `Halo PAS HVAC,\n\nNama: ${data.nama}\nPerusahaan: ${data.perusahaan}\nKebutuhan: ${data.kebutuhan}\n\nSaya ingin mendapatkan penawaran harga. Mohon dihubungi kembali.\n\nNo. WA: ${data.whatsapp}`;
+      message = `Halo PAS HVAC,\n\nNama: ${data.nama}\nPerusahaan: ${data.perusahaan}\nKebutuhan: ${data.kebutuhan}\n\nSaya ingin mendapatkan penawaran harga. Mohon dihubungi kembali.${data.pesan ? `\n\nDeskripsi Kebutuhan:\n${data.pesan}` : ""}\n\nNo. WA: ${data.whatsapp}`;
     } else if (source === "blog_sidebar" || source === "portfolio_sidebar" || source === "portfolio_bottom") {
       // Short sidebar/bottom form — no perusahaan or pesan fields
       message = `Halo PAS HVAC,\n\nNama: ${data.nama}\nNo. WA: ${data.whatsapp}\nKebutuhan: ${data.kebutuhan}\n\nSaya tertarik dengan layanan Anda. Mohon dihubungi kembali. Terima kasih.`;

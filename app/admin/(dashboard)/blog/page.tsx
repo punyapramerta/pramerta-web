@@ -46,20 +46,7 @@ const categoryStyles: Record<string, string> = {
   Teknologi: "bg-cyan-50 text-cyan-700",
 };
 
-const TARGET_KEYWORDS = [
-  "Kontraktor HVAC Indonesia",
-  "Sistem Tata Udara Industri",
-  "Distributor Resmi FRIMEC",
-  "Distributor Resmi GREE",
-  "Air Handling Unit (AHU) Cleanroom",
-  "Sistem VRF GREE",
-  "Water Cooled Chiller",
-  "Precision Air Conditioning (PAC) Data Center",
-  "Fabrikasi Ducting SMACNA",
-  "Jasa Instalasi HVAC Pabrik",
-  "Maintenance Chiller Industri",
-  "Textile Duct / Fabric Duct",
-];
+
 
 export default function AdminBlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -83,14 +70,7 @@ export default function AdminBlogPage() {
   const dragStartY = useRef<number>(0);
   const dragStartPos = useRef<number>(50);
 
-  // AI Generator States
-  const [aiMode, setAiMode] = useState<"auto" | "optimize">("auto");
-  const [rawText, setRawText] = useState("");
-  const [genPurpose, setGenPurpose] = useState("Edukasi & Pembahasan Mendalam (SEO)");
-  const [genAudience, setGenAudience] = useState("B2B, Plant Manager, Engineer, Procurement");
-  const [genKeyword, setGenKeyword] = useState("");
-  const [genTone, setGenTone] = useState("Profesional, Teknis, Persuasif");
-  const [isGenerating, setIsGenerating] = useState(false);
+
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -215,94 +195,17 @@ export default function AdminBlogPage() {
     }
   };
 
-  const handleGenerateAI = async () => {
-    if (!genKeyword) {
-      setFeedback({ type: "error", msg: "Silakan pilih Keyword Target di panel AI Generator terlebih dahulu." });
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-    setIsGenerating(true);
-    setFeedback(null);
-    try {
-      const res = await fetch("/api/blog/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          purpose: genPurpose,
-          audience: genAudience,
-          keyword: genKeyword,
-          tone: genTone,
-          title: form.title,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal menggenerate artikel");
-      
-      setForm((prev) => ({
-        ...prev,
-        title: data.title || prev.title,
-        slug: data.slug || prev.slug,
-        excerpt: data.excerpt || prev.excerpt,
-        metaTitle: data.metaTitle || prev.metaTitle,
-        metaDesc: data.metaDesc || prev.metaDesc,
-        content: data.content || prev.content,
-        targetKeyword: genKeyword,
-        readTime: "7 Menit Baca" // default suggestion
-      }));
-      setFeedback({ type: "success", msg: "Artikel berhasil di-generate AI! Silakan review, sesuaikan kategori, upload gambar hero, lalu Publish." });
-    } catch (error: any) {
-      setFeedback({ type: "error", msg: error.message });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
 
-  const handleOptimizeRawText = async () => {
-    if (!rawText || !genKeyword) {
-      setFeedback({ type: "error", msg: "Silakan isi Teks Mentah dan pilih Target Keyword terlebih dahulu." });
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-    setIsGenerating(true);
-    setFeedback(null);
-    try {
-      const res = await fetch("/api/blog/optimize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          rawText,
-          keyword: genKeyword,
-          title: form.title,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal mengoptimasi artikel");
-      
-      setForm((prev) => ({
-        ...prev,
-        title: data.title || prev.title,
-        slug: data.slug || prev.slug,
-        excerpt: data.excerpt || prev.excerpt,
-        metaTitle: data.metaTitle || prev.metaTitle,
-        metaDesc: data.metaDesc || prev.metaDesc,
-        content: data.content || prev.content,
-        targetKeyword: genKeyword,
-        readTime: "7 Menit Baca"
-      }));
-      setFeedback({ type: "success", msg: "Artikel berhasil dioptimasi AI! Silakan review, sesuaikan kategori, upload gambar hero, lalu Publish." });
-    } catch (error: any) {
-      setFeedback({ type: "error", msg: error.message });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
 
-  const handleSave = (saveStatus: "draft" | "published") => {
+  const handleSave = (saveStatus: "draft" | "published", clearSchedule: boolean = false) => {
     if (!form.title || !form.slug) {
       setFeedback({ type: "error", msg: "Judul dan slug wajib diisi." });
       return;
     }
     const postToSave: BlogPost = { ...form, status: saveStatus };
+    if (clearSchedule) {
+      postToSave.publishedAt = null;
+    }
     startTransition(async () => {
       let result;
       if (mode === "edit" && editSlug) {
@@ -366,120 +269,6 @@ export default function AdminBlogPage() {
           </div>
         )}
 
-        {/* AI GENERATOR PANEL */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="material-symbols-outlined text-gray-500">settings_suggest</span>
-            <h2 className="text-xl font-bold text-gray-800">SEO & GEO AI Auto-Generator</h2>
-          </div>
-
-          <div className="flex bg-gray-100 p-1 rounded-xl mb-6 inline-flex">
-            <button
-              onClick={() => setAiMode("auto")}
-              className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${aiMode === "auto" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-            >
-              Buat Artikel Otomatis
-            </button>
-            <button
-              onClick={() => setAiMode("optimize")}
-              className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${aiMode === "optimize" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
-            >
-              Optimasi Teks Mentah
-            </button>
-          </div>
-
-          <p className="text-sm text-gray-500 mb-6 max-w-2xl">
-            {aiMode === "auto" 
-              ? "Isi preferensi di bawah ini dan biarkan AI Gemini menyusun draf artikel lengkap (Konten HTML, Judul, Slug, SEO Meta) secara otomatis berdasarkan Guideline SEO PAS HVAC."
-              : "Paste teks mentah artikel Anda di bawah ini, dan AI akan merapikannya menjadi artikel HTML SEO siap tayang."}
-          </p>
-          
-          {aiMode === "auto" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Pilih Target Keyword (Tier 1 & 2) *</label>
-                <select 
-                  value={genKeyword} 
-                  onChange={(e) => setGenKeyword(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
-                >
-                  <option value="">-- Pilih Keyword dari Riset SEO --</option>
-                  {TARGET_KEYWORDS.map(k => <option key={k} value={k}>{k}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Tujuan Artikel</label>
-                <input 
-                  type="text" 
-                  value={genPurpose} 
-                  onChange={(e) => setGenPurpose(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400"
-                  placeholder="Misal: Edukasi, Komparasi..."
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Target Audience Intent</label>
-                <input 
-                  type="text" 
-                  value={genAudience} 
-                  onChange={(e) => setGenAudience(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Tone of Voice</label>
-                <input 
-                  type="text" 
-                  value={genTone} 
-                  onChange={(e) => setGenTone(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400"
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-5 mb-6">
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Pilih Target Keyword (Tier 1 & 2) *</label>
-                <select 
-                  value={genKeyword} 
-                  onChange={(e) => setGenKeyword(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
-                >
-                  <option value="">-- Pilih Keyword dari Riset SEO --</option>
-                  {TARGET_KEYWORDS.map(k => <option key={k} value={k}>{k}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Teks Mentah / Raw Copy *</label>
-                <textarea 
-                  rows={8}
-                  value={rawText} 
-                  onChange={(e) => setRawText(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition placeholder:text-gray-400 bg-gray-50 resize-y"
-                  placeholder="Paste artikel mentah Anda di sini..."
-                />
-              </div>
-            </div>
-          )}
-          
-          <button 
-            onClick={aiMode === "auto" ? handleGenerateAI : handleOptimizeRawText}
-            disabled={isGenerating}
-            className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-wait w-full justify-center shadow-md"
-          >
-            {isGenerating ? (
-              <>
-                <span className="material-symbols-outlined animate-spin text-sm">sync</span>
-                {aiMode === "auto" ? "Menyusun artikel komprehensif (~15 detik)..." : "Mengoptimasi artikel (~15 detik)..."}
-              </>
-            ) : (
-              <>
-                <span className="material-symbols-outlined text-sm">magic_button</span>
-                {aiMode === "auto" ? "Buat Artikel Otomatis" : "Optimasi Artikel dengan AI"}
-              </>
-            )}
-          </button>
-        </div>
 
         {/* FORM BIASA / HASIL GENERATE */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
@@ -525,6 +314,16 @@ export default function AdminBlogPage() {
                 className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
                 placeholder="Misal: 5 Menit Baca"
               />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Jadwal Publish (Opsional)</label>
+              <input
+                type="datetime-local"
+                value={form.publishedAt ? new Date(new Date(form.publishedAt).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ""}
+                onChange={(e) => setField("publishedAt", e.target.value ? new Date(e.target.value).toISOString() : null)}
+                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
+              />
+              <p className="text-[10px] text-gray-400 mt-1">Kosongkan untuk publish instan. Isi tanggal untuk dijadwalkan.</p>
             </div>
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Penulis</label>
@@ -797,12 +596,27 @@ export default function AdminBlogPage() {
               Simpan sbg Draft
             </button>
             <button
-              onClick={() => handleSave("published")}
+              onClick={() => {
+                if (!form.publishedAt || new Date(form.publishedAt) <= new Date()) {
+                  setFeedback({ type: "error", msg: "Pilih tanggal dan jam di masa depan pada kolom Jadwal Publish terlebih dahulu." });
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  return;
+                }
+                handleSave("published");
+              }}
+              disabled={isPending}
+              className="bg-blue-100 hover:bg-blue-200 text-blue-700 border border-blue-200 font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2 text-sm disabled:opacity-50 shadow-sm"
+            >
+              <span className="material-symbols-outlined text-sm">schedule</span>
+              Jadwalkan
+            </button>
+            <button
+              onClick={() => handleSave("published", true)}
               disabled={isPending}
               className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2 text-sm disabled:opacity-50 shadow-md"
             >
               <span className="material-symbols-outlined text-sm">{mode === "edit" ? "update" : "publish"}</span>
-              {isPending ? "Menyimpan..." : mode === "edit" ? "Update Artikel" : "Publish Artikel"}
+              {isPending ? "Menyimpan..." : mode === "edit" ? "Update (Instan)" : "Publish (Instan)"}
             </button>
           </div>
         </div>
@@ -853,8 +667,8 @@ export default function AdminBlogPage() {
                       {post.category}
                     </span>
                   )}
-                  <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider ${post.status === "published" ? "bg-green-50 text-green-700" : "bg-yellow-50 text-yellow-700"}`}>
-                    {post.status === "published" ? "Published" : "Draft"}
+                  <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider ${post.status === "published" ? (post.publishedAt && new Date(post.publishedAt) > new Date() ? "bg-blue-50 text-blue-700" : "bg-green-50 text-green-700") : "bg-yellow-50 text-yellow-700"}`}>
+                    {post.status === "published" ? (post.publishedAt && new Date(post.publishedAt) > new Date() ? "Scheduled" : "Published") : "Draft"}
                   </span>
                 </div>
                 <h3 className="font-extrabold text-gray-900 text-sm leading-snug line-clamp-1">{post.title}</h3>

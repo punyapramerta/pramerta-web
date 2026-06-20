@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useLeadForm } from "@/hooks/useLeadForm";
 import { useAppData } from "@/hooks/useAppData";
 import { cn } from "@/lib/utils";
@@ -9,11 +10,19 @@ export default function Hero() {
   const { hero, leadForm } = useAppData();
   const { 
     register, 
-    onSubmit, 
+    handleSubmit,
+    submitDirectly,
+    getValues,
     submitted, 
     errors, 
     isSubmitting 
   } = useLeadForm("hero");
+
+  const [showPopup, setShowPopup] = useState(false);
+
+  const onFirstStep = () => {
+    setShowPopup(true);
+  };
 
   return (
     <section className="relative overflow-hidden py-28 flex items-center bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}>
@@ -73,7 +82,7 @@ export default function Hero() {
           ) : (
             <>
               <h3 className="text-xl font-extrabold font-headline mb-6 text-on-surface">{leadForm.right.title}</h3>
-              <form onSubmit={onSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit(onFirstStep)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-outline uppercase tracking-widest">Nama Lengkap</label>
@@ -145,6 +154,58 @@ export default function Hero() {
           )}
         </div>
       </div>
+
+      {/* Confirmation & Description Popup */}
+      {showPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-headline font-extrabold text-on-surface">Detail Kebutuhan</h3>
+              <button type="button" onClick={() => setShowPopup(false)} className="text-gray-400 hover:text-gray-600">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <p className="text-sm text-gray-500 mb-5 leading-relaxed">
+              Ceritakan sedikit detail tentang kebutuhan sistem tata udara di tempat Anda agar kami dapat memberikan solusi yang paling tepat.
+            </p>
+            
+            <div className="space-y-1.5 mb-6">
+              <label className="text-[10px] font-bold text-outline uppercase tracking-widest">Deskripsi Singkat (Opsional)</label>
+              <textarea 
+                {...register("pesan")}
+                rows={4}
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm p-3 transition-all outline-none resize-none"
+                placeholder="Contoh: Kami membutuhkan pendingin untuk area produksi seluas 500m2..."
+              ></textarea>
+            </div>
+
+            <div className="flex gap-3">
+              <button 
+                type="button"
+                onClick={() => setShowPopup(false)}
+                className="flex-1 bg-white border border-gray-200 text-gray-700 py-3.5 rounded-lg font-bold hover:bg-gray-50 transition-all text-sm"
+              >
+                Batal
+              </button>
+              <button 
+                type="button"
+                disabled={isSubmitting}
+                onClick={async () => {
+                  await submitDirectly(getValues());
+                  setShowPopup(false);
+                }}
+                className="flex-[2] bg-[#25D366] text-white py-3.5 rounded-lg font-bold hover:bg-[#22bf5b] transition-all flex justify-center items-center gap-2 shadow-lg shadow-[#25D366]/20 text-sm disabled:opacity-50"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                  <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.556 4.112 1.528 5.836L.057 23.999l6.305-1.654A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.005-1.373l-.36-.214-3.727.977.995-3.636-.235-.374A9.818 9.818 0 1112 21.818z"/>
+                </svg>
+                Konsultasi Gratis
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

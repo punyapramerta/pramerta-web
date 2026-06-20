@@ -21,6 +21,13 @@ export type Product = {
   imageCover: boolean;
   href: string;
   details: { label: string; value: string }[];
+  content?: string;
+  features?: { icon: string; title: string; description: string }[];
+  applications?: { icon: string; title: string; desc: string }[];
+  faqs?: { question: string; answer: string }[];
+  metaTitle?: string;
+  metaDesc?: string;
+  targetKeyword?: string;
 };
 
 export type ClientLogo = {
@@ -58,7 +65,7 @@ export async function getProducts(): Promise<Product[]> {
   try {
     const { data, error } = await supabase
       .from("products")
-      .select("slug, category, badge, badge_class, name, description, image_url, image_alt, href, details")
+      .select("slug, category, badge, badge_class, name, description, image_url, image_alt, href, details, content, features, applications, faqs, meta_title, meta_desc, target_keyword")
       .order("sort_order", { ascending: true });
     if (error) throw new Error(error.message);
     return (data as {
@@ -72,6 +79,13 @@ export async function getProducts(): Promise<Product[]> {
       image_alt: string;
       href: string;
       details: { label: string; value: string }[];
+      content?: string;
+      features?: { icon: string; title: string; description: string }[];
+      applications?: { icon: string; title: string; desc: string }[];
+      faqs?: { question: string; answer: string }[];
+      meta_title?: string;
+      meta_desc?: string;
+      target_keyword?: string;
     }[]).map((row) => ({
       slug: row.slug,
       category: row.category,
@@ -84,6 +98,13 @@ export async function getProducts(): Promise<Product[]> {
       imageCover: false,
       href: row.href,
       details: row.details ?? [],
+      content: row.content,
+      features: row.features ?? [],
+      applications: row.applications ?? [],
+      faqs: row.faqs ?? [],
+      metaTitle: row.meta_title,
+      metaDesc: row.meta_desc,
+      targetKeyword: row.target_keyword,
     }));
   } catch (err) {
     console.error("Failed to fetch products:", err);

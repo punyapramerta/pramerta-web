@@ -75,7 +75,7 @@ function postToRow(post: BlogPost): Omit<BlogRow, "id" | "created_at"> {
     meta_desc: post.metaDesc,
     target_keyword: post.targetKeyword,
     status: post.status,
-    published_at: post.status === "published" ? (post.publishedAt ?? new Date().toISOString()) : null,
+    published_at: post.publishedAt || (post.status === "published" ? new Date().toISOString() : null),
   };
 }
 
@@ -103,6 +103,7 @@ export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
       .from("blog_posts")
       .select("*")
       .eq("status", "published")
+      .lte("published_at", new Date().toISOString())
       .order("published_at", { ascending: false });
     if (error) throw new Error(error.message);
     return (data as BlogRow[]).map(rowToPost);

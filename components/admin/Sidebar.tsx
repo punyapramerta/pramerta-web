@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { logout } from "@/app/admin/actions";
 import { useRouter } from "next/navigation";
 
-export default function Sidebar() {
+export default function Sidebar({ isEditor }: { isEditor?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -24,7 +24,12 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 min-h-screen flex flex-col fixed inset-y-0 left-0 z-20">
+    <aside className={`bg-white border-r border-gray-200 min-h-screen flex flex-col fixed inset-y-0 left-0 z-50 transition-all duration-300 ease-in-out group ${
+      isEditor ? "-translate-x-[240px] hover:translate-x-0 w-64 shadow-2xl" : "translate-x-0 w-64"
+    }`}>
+      {isEditor && (
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-16 bg-gray-200 rounded-l-md group-hover:opacity-0 transition-opacity" />
+      )}
       <div className="p-6 border-b border-gray-100 flex items-center gap-3">
         <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
           <span className="material-symbols-outlined">admin_panel_settings</span>

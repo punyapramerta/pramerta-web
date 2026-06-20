@@ -46,6 +46,7 @@ export function useLeadForm(source: "hero" | "footer" | "bottom" | "blog_sidebar
     ...form,
     submitted,
     onSubmit: form.handleSubmit(onSubmit),
+    submitDirectly: onSubmit,
     isSubmitting: form.formState.isSubmitting,
     errors: form.formState.errors,
   };
