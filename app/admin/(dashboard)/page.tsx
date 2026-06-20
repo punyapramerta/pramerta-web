@@ -75,7 +75,7 @@ export default function AdminHomePage() {
     if (!confirm("Hapus logo klien ini?")) return;
     try {
       const res = await deleteClientLogo(id);
-      if (!res.ok && !res.success) throw new Error(res.error);
+      if (!res.success) throw new Error(res.error);
       await loadLogos();
       setRefreshKey(prev => prev + 1);
     } catch (err: any) {
