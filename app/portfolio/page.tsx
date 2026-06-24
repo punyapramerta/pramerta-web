@@ -12,11 +12,28 @@ export const metadata: Metadata = {
 };
 
 import { getPortfolioItems } from "@/app/admin/portfolioActions";
+import Pagination from "@/components/portfolio/Pagination";
+import CertificationSlider from "@/components/portfolio/CertificationSlider";
 
 export const revalidate = 60;
 
-export default async function PortfolioPage() {
+export default async function PortfolioPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const params = await searchParams;
   const portfolioData = await getPortfolioItems();
+  
+  // Pagination Logic
+  const currentPage = Number(params?.page) || 1;
+  const ITEMS_PER_PAGE = 3;
+  const totalPages = Math.ceil(portfolioData.length / ITEMS_PER_PAGE);
+  const currentData = portfolioData.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -25,6 +42,14 @@ export default async function PortfolioPage() {
       { "@type": "ListItem", "position": 2, "name": "Portfolio", "item": "https://www.pramerta.co.id/portfolio" }
     ]
   };
+
+  // Converted PDF certification images
+  const certImages = [
+    "/images/certifications/cert-1.jpg",
+    "/images/certifications/cert-2.jpg",
+    "/images/certifications/cert-3.jpg",
+    "/images/certifications/cert-4.jpg",
+  ];
 
   return (
     <>
@@ -56,6 +81,7 @@ export default async function PortfolioPage() {
           </div>
         </section>
 
+
         {/* ── MAIN CONTENT (2 COLUMNS) ── */}
         <section className="py-16 md:py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,7 +91,7 @@ export default async function PortfolioPage() {
               <div className="w-full lg:w-2/3 xl:w-[70%]">
                 
                 <div className="space-y-8">
-                  {portfolioData.map((project) => (
+                  {currentData.map((project) => (
                     <Link
                       href={`/portfolio/${project.slug}`}
                       key={project.slug}
@@ -115,12 +141,35 @@ export default async function PortfolioPage() {
                     </Link>
                   ))}
                 </div>
+
+                {/* Pagination */}
+                <Pagination currentPage={currentPage} totalPages={totalPages} />
               </div>
 
               {/* RIGHT COLUMN: Sidebar */}
               <PortfolioSidebar />
 
             </div>
+          </div>
+        </section>
+
+        {/* ── OUR CERTIFICATION SECTION ── */}
+        <section className="py-16 md:py-24 bg-white border-y border-neutral-200/50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <span className="inline-flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.2em] px-4 py-2 rounded-full mb-4 text-primary bg-primary/5">
+                <span className="material-symbols-outlined text-[14px]">verified</span>
+                Qualifications
+              </span>
+              <h2 className="text-3xl md:text-4xl font-headline font-extrabold text-neutral-900 mb-4">
+                Our Certification
+              </h2>
+              <p className="text-neutral-500 font-body max-w-2xl mx-auto">
+                Komitmen kami terhadap standar internasional dan kualitas pengerjaan yang terjamin.
+              </p>
+            </div>
+            
+            <CertificationSlider images={certImages} />
           </div>
         </section>
 
