@@ -5,7 +5,7 @@ import Sidebar from "@/components/admin/Sidebar";
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isEditor = pathname?.includes("/editor") || pathname === "/admin";
+  const isEditor = pathname?.includes("/editor") || pathname === "/admin" || pathname === "/admin/portfolio";
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
