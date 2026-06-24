@@ -389,6 +389,7 @@ export default function AdminBlogPage() {
                   <div className={`absolute inset-0 bg-black/0 hover:bg-black/30 transition-colors flex items-center justify-center gap-3 ${isDraggingImage ? 'hidden' : 'opacity-0 group-hover:opacity-100'}`}>
                     <button
                       type="button"
+                      onMouseDown={(e) => e.stopPropagation()}
                       onClick={(e) => {
                         e.stopPropagation();
                         fileInputRef.current?.click();
@@ -401,6 +402,7 @@ export default function AdminBlogPage() {
                     </button>
                     <button
                       type="button"
+                      onMouseDown={(e) => e.stopPropagation()}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleImageDelete();
