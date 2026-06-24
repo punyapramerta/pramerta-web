@@ -373,7 +373,7 @@ export default function AdminBlogPage() {
               />
               {form.imageUrl ? (
                 <div 
-                  className={`relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50 group ${isDraggingImage ? 'cursor-grabbing' : 'cursor-grab'}`}
+                  className={`relative aspect-video w-full rounded-3xl overflow-hidden border border-gray-200 bg-gray-50 group ${isDraggingImage ? 'cursor-grabbing' : 'cursor-grab'}`}
                   onMouseDown={(e) => {
                     if (uploading) return;
                     setIsDraggingImage(true);
@@ -394,17 +394,17 @@ export default function AdminBlogPage() {
                   <img
                     src={form.imageUrl}
                     alt="preview"
-                    className="w-full h-48 object-cover pointer-events-none select-none"
+                    className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
                     style={{ objectPosition: `50% ${form.imagePositionY ?? 50}%` }}
                     draggable={false}
                   />
                   {!isDraggingImage && (
-                    <div className="absolute top-3 left-3 bg-black/60 text-white text-xs px-2.5 py-1.5 rounded-lg font-bold tracking-wide flex items-center gap-1.5 opacity-80 backdrop-blur-sm pointer-events-none">
+                    <div className="absolute top-4 left-4 bg-black/60 text-white text-xs px-3 py-2 rounded-xl font-bold tracking-wide flex items-center gap-1.5 opacity-80 backdrop-blur-sm pointer-events-none z-10">
                       <span className="material-symbols-outlined text-[16px]">swipe_vertical</span> 
                       Geser Gambar
                     </div>
                   )}
-                  <div className={`absolute inset-0 bg-black/0 hover:bg-black/30 transition-colors flex items-center justify-center gap-3 ${isDraggingImage ? 'hidden' : 'opacity-0 group-hover:opacity-100'}`}>
+                  <div className={`absolute inset-0 bg-black/0 hover:bg-black/30 transition-colors flex items-center justify-center gap-3 z-20 ${isDraggingImage ? 'hidden' : 'opacity-0 group-hover:opacity-100'}`}>
                     <button
                       type="button"
                       onMouseDown={(e) => e.stopPropagation()}
