@@ -78,14 +78,32 @@ export default function AdminBlogPage() {
       if (!form.slug) setFeedback({ type: "error", msg: "Isi Slug terlebih dahulu sebelum upload gambar." });
       return;
     }
+    
+    // Check file size (max 4MB for Vercel Serverless limits)
+    if (file.size > 4 * 1024 * 1024) {
+      setFeedback({ type: "error", msg: "Ukuran gambar terlalu besar. Maksimal 4 MB." });
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
     setUploading(true);
     try {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("slug", form.slug);
       fd.append("keyword", slugify(form.targetKeyword || form.title || form.slug));
+      
       const res = await fetch("/api/blog/upload", { method: "POST", body: fd });
-      const json = await res.json();
+      
+      let json;
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        json = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(`Upload gagal (${res.status}): Server mengembalikan format yang tidak valid. (Mungkin file terlalu besar)`);
+      }
+      
       if (!res.ok) throw new Error(json.error ?? "Upload gagal");
       setField("imageUrl", json.url);
       setFeedback({ type: "success", msg: "Gambar berhasil diupload." });
