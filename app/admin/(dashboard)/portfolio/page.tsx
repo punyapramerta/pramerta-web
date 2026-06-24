@@ -102,7 +102,9 @@ export default function AdminPortfolioPage() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [formError, setFormError] = useState("");
 
-  // Image state within modal
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Image state
   const [imagePreview, setImagePreview] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
@@ -208,12 +210,17 @@ export default function AdminPortfolioPage() {
         if (mode === "add") {
           const res = await addPortfolioItem(item);
           if (!res.success) { setFormError(res.error ?? "Gagal menyimpan."); return; }
+          setEditingSlug(form.slug);
+          setMode("edit");
         } else {
           const res = await updatePortfolioItem(editingSlug!, item);
           if (!res.success) { setFormError(res.error ?? "Gagal menyimpan."); return; }
         }
-        closeModal();
         await refresh();
+        setRefreshKey(k => k + 1);
+        
+        // Use a simple non-blocking notification or standard alert
+        alert("Portofolio berhasil disimpan!");
       } catch {
         setFormError("Terjadi kesalahan saat upload gambar.");
       }
@@ -239,6 +246,268 @@ export default function AdminPortfolioPage() {
     });
   }
 
+  if (mode !== "none") {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-2rem)] overflow-hidden">
+        {/* LEFT: EDITOR */}
+        <div className="flex flex-col h-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 shrink-0">
+            <div>
+              <h1 className="text-xl font-headline font-extrabold text-gray-900">
+                {mode === "add" ? "Tambah Portofolio" : "Edit Portofolio"}
+              </h1>
+              <button onClick={closeModal} className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 font-bold transition-colors mt-2">
+                <span className="material-symbols-outlined text-[14px]">arrow_back</span>
+                Kembali ke Daftar
+              </button>
+            </div>
+            <button
+              onClick={handleSave}
+              disabled={isPending || imageUploading}
+              className="bg-primary hover:bg-primary/90 text-white font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-2 disabled:opacity-70 shadow-md text-sm"
+            >
+              {isPending || imageUploading ? (
+                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-[16px]">save</span>
+                  Simpan
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/30">
+            {formError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 text-sm font-bold px-4 py-2 rounded-lg">
+                {formError}
+              </div>
+            )}
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+              <label className="text-xs font-bold text-gray-600 block mb-2">Gambar Proyek</label>
+              <div className="relative rounded-xl overflow-hidden border-2 border-dashed border-gray-200 bg-gray-50 aspect-[16/7] flex items-center justify-center">
+                {imagePreview ? (
+                  <>
+                    <Image
+                      src={imagePreview}
+                      alt="preview"
+                      fill
+                      className="object-cover"
+                      unoptimized={imagePreview.startsWith("blob:")}
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="bg-white text-gray-800 font-bold text-xs px-4 py-2 rounded-lg flex items-center gap-1.5 hover:bg-gray-100"
+                      >
+                        <span className="material-symbols-outlined text-sm">upload</span>
+                        Ganti
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="bg-red-600 text-white font-bold text-xs px-4 py-2 rounded-lg flex items-center gap-1.5 hover:bg-red-700"
+                      >
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                        Hapus
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex flex-col items-center gap-2 text-gray-400 hover:text-primary transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-4xl">add_photo_alternate</span>
+                    <span className="text-sm font-bold">Klik untuk upload gambar</span>
+                    <span className="text-xs">JPG, PNG, WebP — maks 5MB</span>
+                  </button>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/avif"
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+              {imageUploading && (
+                <p className="text-xs text-primary font-bold mt-1">Mengupload gambar...</p>
+              )}
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <label className="text-xs font-bold text-gray-600 block mb-1">Judul Proyek *</label>
+                <input
+                  type="text"
+                  value={form.title}
+                  onChange={(e) => handleFormChange("title", e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
+                  placeholder="Judul proyek"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">Slug (URL) *</label>
+                <input
+                  type="text"
+                  value={form.slug}
+                  onChange={(e) => handleFormChange("slug", e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm font-mono"
+                  placeholder="url-proyek"
+                  readOnly={mode === "edit"}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">Klien *</label>
+                <input
+                  type="text"
+                  value={form.client}
+                  onChange={(e) => handleFormChange("client", e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
+                  placeholder="Nama klien"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">Industri</label>
+                <input
+                  type="text"
+                  value={form.industry}
+                  onChange={(e) => handleFormChange("industry", e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
+                  placeholder="Contoh: F&amp;B, Rumah Sakit"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">Lokasi</label>
+                <input
+                  type="text"
+                  value={form.location}
+                  onChange={(e) => handleFormChange("location", e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
+                  placeholder="Contoh: Surabaya"
+                />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">Excerpt (ringkasan singkat)</label>
+                <textarea
+                  rows={2}
+                  value={form.excerpt}
+                  onChange={(e) => handleFormChange("excerpt", e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">Latar Belakang</label>
+                <textarea
+                  rows={3}
+                  value={form.background}
+                  onChange={(e) => handleFormChange("background", e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">
+                  Tantangan <span className="font-normal text-gray-400">(satu per baris)</span>
+                </label>
+                <textarea
+                  rows={3}
+                  value={form.challenges}
+                  onChange={(e) => handleFormChange("challenges", e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
+                  placeholder="Tantangan 1&#10;Tantangan 2"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">Kutipan Tantangan Utama</label>
+                <input
+                  type="text"
+                  value={form.highlightChallenge}
+                  onChange={(e) => handleFormChange("highlightChallenge", e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">
+                  Solusi <span className="font-normal text-gray-400">(satu per baris)</span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={form.solution}
+                  onChange={(e) => handleFormChange("solution", e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
+                  placeholder="Langkah solusi 1&#10;Langkah solusi 2"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">
+                  Hasil <span className="font-normal text-gray-400">(satu per baris)</span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={form.results}
+                  onChange={(e) => handleFormChange("results", e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
+                  placeholder="Hasil 1&#10;Hasil 2"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">
+                  Metrik <span className="font-normal text-gray-400">(format: Label|Nilai, satu per baris)</span>
+                </label>
+                <textarea
+                  rows={4}
+                  value={form.metrics}
+                  onChange={(e) => handleFormChange("metrics", e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm font-mono"
+                  placeholder="Penurunan Suhu|10–20%&#10;Hemat Biaya|10%"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT: PREVIEW */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden flex flex-col relative h-full">
+          <div className="bg-gray-900 text-white px-4 py-2 flex justify-between items-center text-xs font-mono z-10 shrink-0">
+            <div className="flex gap-2 items-center">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+            </div>
+            <span>Live Preview (Zoom 50%)</span>
+            <button onClick={() => setRefreshKey(k => k+1)} className="hover:text-primary transition-colors flex items-center gap-1">
+              <span className="material-symbols-outlined text-[14px]">refresh</span> Reload
+            </button>
+          </div>
+          <div className="flex-1 relative overflow-hidden bg-gray-100">
+            <div className="absolute top-0 left-0 w-[200%] h-[200%] origin-top-left scale-50">
+              {mode === "add" && !editingSlug ? (
+                <div className="flex items-center justify-center w-full h-full bg-white flex-col gap-4">
+                  <span className="material-symbols-outlined text-6xl text-gray-300">preview</span>
+                  <p className="text-gray-500 text-lg font-bold">Simpan data terlebih dahulu untuk melihat Live Preview</p>
+                </div>
+              ) : (
+                <iframe 
+                  key={refreshKey}
+                  src={`/portfolio/${form.slug}?preview=${refreshKey}`} 
+                  className="w-full h-full border-none bg-white"
+                  title="Portfolio Preview"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl">
       <div className="mb-8 flex justify-between items-end">
@@ -255,7 +524,6 @@ export default function AdminPortfolioPage() {
         </button>
       </div>
 
-      {/* Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-gray-400 font-bold">Memuat data...</div>
@@ -327,239 +595,6 @@ export default function AdminPortfolioPage() {
         )}
       </div>
 
-      {/* Edit / Add Modal */}
-      {mode !== "none" && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 overflow-y-auto py-8 px-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative">
-            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900">
-                {mode === "add" ? "Tambah Portofolio" : "Edit Portofolio"}
-              </h2>
-              <button onClick={closeModal} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <span className="material-symbols-outlined text-gray-500">close</span>
-              </button>
-            </div>
-
-            <div className="p-6 space-y-4">
-              {formError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 text-sm font-bold px-4 py-2 rounded-lg">
-                  {formError}
-                </div>
-              )}
-
-              {/* Image Upload */}
-              <div>
-                <label className="text-xs font-bold text-gray-600 block mb-2">Gambar Proyek</label>
-                <div className="relative rounded-xl overflow-hidden border-2 border-dashed border-gray-200 bg-gray-50 aspect-16/7 flex items-center justify-center">
-                  {imagePreview ? (
-                    <>
-                      <Image
-                        src={imagePreview}
-                        alt="preview"
-                        fill
-                        className="object-cover"
-                        unoptimized={imagePreview.startsWith("blob:")}
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="bg-white text-gray-800 font-bold text-xs px-4 py-2 rounded-lg flex items-center gap-1.5 hover:bg-gray-100"
-                        >
-                          <span className="material-symbols-outlined text-sm">upload</span>
-                          Ganti
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleRemoveImage}
-                          className="bg-red-600 text-white font-bold text-xs px-4 py-2 rounded-lg flex items-center gap-1.5 hover:bg-red-700"
-                        >
-                          <span className="material-symbols-outlined text-sm">delete</span>
-                          Hapus
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="flex flex-col items-center gap-2 text-gray-400 hover:text-primary transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-4xl">add_photo_alternate</span>
-                      <span className="text-sm font-bold">Klik untuk upload gambar</span>
-                      <span className="text-xs">JPG, PNG, WebP — maks 5MB</span>
-                    </button>
-                  )}
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/avif"
-                  className="hidden"
-                  onChange={handleFileSelect}
-                />
-                {imageUploading && (
-                  <p className="text-xs text-primary font-bold mt-1">Mengupload gambar...</p>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label className="text-xs font-bold text-gray-600 block mb-1">Judul Proyek *</label>
-                  <input
-                    type="text"
-                    value={form.title}
-                    onChange={(e) => handleFormChange("title", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
-                    placeholder="Judul proyek"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">Slug (URL) *</label>
-                  <input
-                    type="text"
-                    value={form.slug}
-                    onChange={(e) => handleFormChange("slug", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
-                    placeholder="url-proyek"
-                    readOnly={mode === "edit"}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">Klien *</label>
-                  <input
-                    type="text"
-                    value={form.client}
-                    onChange={(e) => handleFormChange("client", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
-                    placeholder="Nama klien"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">Industri</label>
-                  <input
-                    type="text"
-                    value={form.industry}
-                    onChange={(e) => handleFormChange("industry", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
-                    placeholder="Contoh: F&amp;B, Rumah Sakit"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">Lokasi</label>
-                  <input
-                    type="text"
-                    value={form.location}
-                    onChange={(e) => handleFormChange("location", e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
-                    placeholder="Contoh: Surabaya"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1">Excerpt (ringkasan singkat)</label>
-                <textarea
-                  rows={2}
-                  value={form.excerpt}
-                  onChange={(e) => handleFormChange("excerpt", e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1">Latar Belakang</label>
-                <textarea
-                  rows={3}
-                  value={form.background}
-                  onChange={(e) => handleFormChange("background", e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1">
-                  Tantangan <span className="font-normal text-gray-400">(satu per baris)</span>
-                </label>
-                <textarea
-                  rows={3}
-                  value={form.challenges}
-                  onChange={(e) => handleFormChange("challenges", e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
-                  placeholder="Tantangan 1&#10;Tantangan 2"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1">Kutipan Tantangan Utama</label>
-                <input
-                  type="text"
-                  value={form.highlightChallenge}
-                  onChange={(e) => handleFormChange("highlightChallenge", e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1">
-                  Solusi <span className="font-normal text-gray-400">(satu per baris)</span>
-                </label>
-                <textarea
-                  rows={2}
-                  value={form.solution}
-                  onChange={(e) => handleFormChange("solution", e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
-                  placeholder="Langkah solusi 1&#10;Langkah solusi 2"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1">
-                  Hasil <span className="font-normal text-gray-400">(satu per baris)</span>
-                </label>
-                <textarea
-                  rows={2}
-                  value={form.results}
-                  onChange={(e) => handleFormChange("results", e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm"
-                  placeholder="Hasil 1&#10;Hasil 2"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1">
-                  Metrik <span className="font-normal text-gray-400">(format: Label|Nilai, satu per baris)</span>
-                </label>
-                <textarea
-                  rows={4}
-                  value={form.metrics}
-                  onChange={(e) => handleFormChange("metrics", e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm font-mono"
-                  placeholder="Penurunan Suhu|10–20%&#10;Hemat Biaya|10%"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 px-6 pb-6">
-              <button
-                onClick={closeModal}
-                className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-sm hover:bg-gray-50 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={isPending || imageUploading}
-                className="px-6 py-2.5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-colors disabled:opacity-60"
-              >
-                {isPending || imageUploading ? "Menyimpan..." : "Simpan"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirm Modal */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
