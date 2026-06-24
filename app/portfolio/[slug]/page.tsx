@@ -215,7 +215,7 @@ export default async function SinglePortfolioPage({ params }: Props) {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href={`https://wa.me/628155503777?text=${encodeURIComponent("Halo PAS HVAC, saya tertarik untuk membangun proyek HVAC serupa dan ingin konsultasi gratis.")}`}
+                href={`https://wa.me/6285880006888?text=${encodeURIComponent("Halo PAS HVAC, saya tertarik untuk membangun proyek HVAC serupa dan ingin konsultasi gratis.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 bg-[#25D366] hover:bg-[#22bf5b] text-white font-extrabold px-8 py-4 rounded-xl transition-all shadow-xl shadow-[#25D366]/20 active:scale-95 text-sm uppercase tracking-widest"

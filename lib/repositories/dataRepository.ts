@@ -1,6 +1,6 @@
 import _portfolioJson from "@/lib/data/portfolioData.json";
 
-export const WA_NUMBER = "628155503777";
+export const WA_NUMBER = "6285880006888";
 
 export const companyData = {
   name: "PT. Pratama Amerta Solusi",
@@ -85,7 +85,7 @@ export const leadFormData = {
     description:
       "Dapatkan solusi tata udara industri yang optimal. Hubungi konsultan teknis kami hari ini untuk request quotation (RFQ) atau survei lokasi gratis.",
     benefits: [
-      { icon: "call", text: "031-995-48097", description: "Telepon Office" },
+      { icon: "call", text: "0858-8000-6888", description: "Sales HVAC (Bu Vava)" },
       { icon: "mail", text: "Sales@pramerta.co.id", description: "Email Sales" },
     ],
   },
