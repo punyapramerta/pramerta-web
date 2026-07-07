@@ -3,7 +3,7 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BlogSidebar from "@/components/blog/BlogSidebar";
-import { getPublishedBlogPosts } from "@/app/admin/blogActions";
+import { getPublishedBlogPostsPaginated } from "@/app/admin/blogActions";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
@@ -27,8 +27,11 @@ const categoryStyles: Record<string, string> = {
   Teknologi: "bg-cyan-50 text-cyan-700 border-cyan-100",
 };
 
-export default async function BlogPage() {
-  const posts = await getPublishedBlogPosts();
+export default async function BlogPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const resolvedSearchParams = await searchParams;
+  const currentPage = Number(resolvedSearchParams.page) || 1;
+  const limit = 6;
+  const { posts, totalPages } = await getPublishedBlogPostsPaginated(currentPage, limit);
 
   return (
     <>
@@ -123,24 +126,49 @@ export default async function BlogPage() {
                 </div>
 
                 {/* Pagination */}
-                <div className="mt-16 flex items-center justify-center gap-2">
-                  <button className="w-10 h-10 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-400 hover:bg-neutral-50 transition-colors cursor-not-allowed">
-                    <span className="material-symbols-outlined text-[18px]">chevron_left</span>
-                  </button>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-white font-bold shadow-md shadow-primary/20">
-                    1
-                  </button>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300 font-bold transition-colors">
-                    2
-                  </button>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300 font-bold transition-colors">
-                    3
-                  </button>
-                  <span className="px-2 text-neutral-400">...</span>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300 transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">chevron_right</span>
-                  </button>
-                </div>
+                {totalPages > 1 && (
+                  <div className="mt-16 flex items-center justify-center gap-2">
+                    {currentPage > 1 ? (
+                      <Link
+                        href={`?page=${currentPage - 1}`}
+                        className="w-10 h-10 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                      </Link>
+                    ) : (
+                      <button disabled className="w-10 h-10 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-400 bg-neutral-50 cursor-not-allowed">
+                        <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                      </button>
+                    )}
+
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <Link
+                        key={page}
+                        href={`?page=${page}`}
+                        className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold transition-colors ${
+                          currentPage === page
+                            ? "bg-primary text-white shadow-md shadow-primary/20"
+                            : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300"
+                        }`}
+                      >
+                        {page}
+                      </Link>
+                    ))}
+
+                    {currentPage < totalPages ? (
+                      <Link
+                        href={`?page=${currentPage + 1}`}
+                        className="w-10 h-10 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                      </Link>
+                    ) : (
+                      <button disabled className="w-10 h-10 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-400 bg-neutral-50 cursor-not-allowed">
+                        <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* RIGHT COLUMN: Sidebar */}

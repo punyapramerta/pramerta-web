@@ -113,6 +113,31 @@ export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
   }
 }
 
+export async function getPublishedBlogPostsPaginated(page: number, limit: number): Promise<{ posts: BlogPost[], totalPages: number }> {
+  if (!isSupabaseConfigured()) return { posts: [], totalPages: 0 };
+  const supabase = createServerClient();
+  try {
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+    const { data, count, error } = await supabase
+      .from("blog_posts")
+      .select("*", { count: 'exact' })
+      .eq("status", "published")
+      .lte("published_at", new Date().toISOString())
+      .order("published_at", { ascending: false })
+      .range(from, to);
+    if (error) throw new Error(error.message);
+    const totalPages = Math.ceil((count || 0) / limit);
+    return {
+      posts: (data as BlogRow[]).map(rowToPost),
+      totalPages
+    };
+  } catch (err) {
+    console.error("Failed to fetch paginated published blog posts:", err);
+    return { posts: [], totalPages: 0 };
+  }
+}
+
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = createServerClient();

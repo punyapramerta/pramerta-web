@@ -4,15 +4,16 @@ import { getProducts } from "@/lib/supabase/queries";
 import ProductView from "@/components/products/ProductView";
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  const { slug } = await params;
   const products = await getProducts();
-  const product = products.find((p) => p.slug === params.slug);
+  const product = products.find((p) => p.slug === slug);
 
   if (!product) {
     return { title: "Product Not Found | PAS HVAC" };
@@ -36,8 +37,9 @@ export async function generateMetadata(
 }
 
 export default async function ProductDetailPage({ params }: Props) {
+  const { slug } = await params;
   const products = await getProducts();
-  const product = products.find((p) => p.slug === params.slug);
+  const product = products.find((p) => p.slug === slug);
 
   if (!product) {
     notFound();

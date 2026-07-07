@@ -142,6 +142,24 @@ export const productsData = [
     imageAlt: "Air Handling Unit FRIMEC",
     imageCover: false,
     href: "/products/ahu",
+    content: "Air Handling Unit (AHU) dari FRIMEC dirancang khusus untuk memenuhi standar distribusi sirkulasi udara skala besar yang membutuhkan penyaringan, pendinginan, serta pemanasan yang optimal. Dilengkapi efisiensi tinggi, struktur modular, serta sertifikasi standar mutu global, menjadikannya pilihan andal untuk ruang komersial, fasilitas kesehatan, maupun pabrik industrial.",
+    features: [
+      { icon: "ac_unit", title: "Pendinginan Optimal", description: "Performa pertukaran panas terbaik dengan koil berdesain presisi tinggi." },
+      { icon: "build", title: "Instalasi Fleksibel", description: "Sistem modular memudahkan instalasi pada berbagai layout bangunan." },
+      { icon: "bolt", title: "Hemat Energi", description: "Menggunakan motor kipas berstandar IE3 untuk efisiensi listrik." },
+    ],
+    applications: [
+      { icon: "local_hospital", title: "Rumah Sakit", desc: "Sirkulasi udara higienis untuk ruang operasi." },
+      { icon: "store", title: "Mall / Retail", desc: "Tata udara nyaman untuk area publik luas." },
+      { icon: "factory", title: "Pabrik", desc: "Ventilasi optimal bagi fasilitas produksi." },
+    ],
+    faqs: [
+      { question: "Apakah AHU FRIMEC mendukung custom filter?", answer: "Ya, kami menyediakan opsi integrasi HEPA filter untuk ruangan berstandar kebersihan tinggi." },
+      { question: "Berapa kapasitas aliran udara (CFM) maksimal yang tersedia?", answer: "Kapasitas modular kami sangat bervariasi, dari ratusan hingga puluhan ribu CFM sesuai desain." },
+    ],
+    metaTitle: "Air Handling Unit (AHU) FRIMEC | PAS HVAC",
+    metaDesc: "Distributor AHU FRIMEC resmi. Menghadirkan efisiensi tata udara untuk industri dan komersial dengan desain modular presisi.",
+    targetKeyword: "Air Handling Unit AHU Surabaya",
   },
   {
     category: "Chiller System",
@@ -158,6 +176,22 @@ export const productsData = [
     imageAlt: "Gree Air Handling Unit",
     imageCover: false,
     href: "/products/chiller",
+    content: "Gree Chiller dan VRF System dirancang untuk menghadirkan kenyamanan termal terpusat dalam skala gedung bertingkat. Menggunakan inovasi kompresor inverter yang bekerja secara pintar menyesuaikan beban pendinginan gedung, investasi produk HVAC ini memastikan biaya operasional (OPEX) lebih rendah secara berkelanjutan.",
+    features: [
+      { icon: "precision_manufacturing", title: "Kompresor Inverter", description: "Menghemat konsumsi listrik hingga 30% pada beban parsial." },
+      { icon: "thermostat", title: "Kontrol Presisi", description: "Suhu ruangan terkontrol stabil, menghindari fluktuasi drastis." },
+      { icon: "device_thermostat", title: "Ramah Lingkungan", description: "Refrigerant generasi terbaru yang tidak merusak lapisan ozon." },
+    ],
+    applications: [
+      { icon: "apartment", title: "Gedung Perkantoran", desc: "Solusi AC terpusat untuk efisiensi ruang dan energi." },
+      { icon: "hotel", title: "Hotel & Resort", desc: "Kenyamanan tanpa suara bising pada kamar tidur." },
+    ],
+    faqs: [
+      { question: "Apakah sistem VRF bisa dikontrol terpusat?", answer: "Sangat bisa, Gree VRF mendukung sistem kontrol terpusat via software manajemen gedung." },
+    ],
+    metaTitle: "Chiller & VRF System GREE | Solusi HVAC Terpusat",
+    metaDesc: "GREE Chiller dan Sistem VRF untuk bangunan bertingkat. Efisien energi, canggih, dan ramah lingkungan.",
+    targetKeyword: "Gree VRF Chiller Indonesia",
   },
   {
     category: "Precision Cooling",
@@ -174,6 +208,23 @@ export const productsData = [
     imageAlt: "Precision Air Conditioning PAC Data Center",
     imageCover: false,
     href: "/products/pac",
+    content: "Berbeda dengan AC kenyamanan biasa, Precision Air Conditioning (PAC) didesain khusus bekerja non-stop 24/7. Produk PAC kami menjamin tingkat kestabilan temperatur serta kelembaban (RH) secara ketat, guna melindungi aset krusial bernilai tinggi dari panas berlebih, korsleting, ataupun kerusakan komponen mikro.",
+    features: [
+      { icon: "monitor_weight", title: "Sensible Heat Ratio Tinggi", description: "Mampu mendinginkan peralatan IT, bukan sekadar ruang udara." },
+      { icon: "dew_point", title: "Kontrol Kelembapan", description: "Sensor pelembap & dehumidifikasi aktif mencegah penumpukan statis." },
+      { icon: "cycle", title: "24/7 Reliability", description: "Dirancang beroperasi kontinu sepanjang tahun tanpa henti." },
+    ],
+    applications: [
+      { icon: "dns", title: "Data Center", desc: "Pendinginan konstan untuk server farm." },
+      { icon: "science", title: "Laboratorium", desc: "Kontrol iklim ruangan untuk eksperimen sensitif." },
+      { icon: "memory", title: "Ruang Kontrol (CCR)", desc: "Menjaga stabilitas instrumen pabrik." },
+    ],
+    faqs: [
+      { question: "Apa bedanya PAC dengan AC komersial biasa?", answer: "PAC berfokus pada sensible cooling (mendinginkan mesin), beroperasi 24/7, dan mengontrol kelembapan dengan presisi sangat tinggi." },
+    ],
+    metaTitle: "Precision Air Conditioning (PAC) untuk Data Center",
+    metaDesc: "Jaga stabilitas server dan alat sensitif Anda dengan Precision Air Conditioning. Suhu presisi, operasional non-stop 24/7.",
+    targetKeyword: "Precision Air Conditioning PAC",
   },
   {
     category: "Ducting System",
@@ -190,7 +241,25 @@ export const productsData = [
     imageAlt: "Sheet Metal Ducting",
     imageCover: true,
     href: "/products/ducting",
-  },
+    content: "Sebagai komponen vital dalam sirkulasi udara (HVAC), instalasi saluran udara (Ducting) memerlukan akurasi fabrikasi tingkat tinggi. PAS HVAC menyediakan manufaktur ducting Sheet Metal bermaterial unggul (BJLS, Stainless, Aluminium) menggunakan sistem automasi modern, hingga solusi cerdas Textile/Fabric Duct yang menawarkan distribusi udara tanpa draft.",
+    features: [
+      { icon: "precision_manufacturing", title: "Fabrikasi Otomatis", description: "Pemotongan dan perakitan mesin presisi mengurangi tingkat kebocoran." },
+      { icon: "air", title: "Distribusi Rata (Textile)", description: "Teknologi pori mikro untuk sebaran udara menyeluruh tanpa embusan kasar." },
+      { icon: "verified", title: "Standar SMACNA", description: "Ketahanan dan dimensi yang diakui regulasi internasional." },
+    ],
+    applications: [
+      { icon: "factory", title: "Industri Manufaktur", desc: "Ekstraksi panas dan ventilasi pabrik." },
+      { icon: "storefront", title: "F&B / Restoran", desc: "Exhaust ducting khusus dapur komersial." },
+      { icon: "sports_gymnastics", title: "Fasilitas Olahraga", desc: "Aplikasi Textile Duct yang estetis dan efisien." },
+    ],
+    faqs: [
+      { question: "Berapa ketebalan BJLS yang disediakan?", answer: "Kami menyediakan ketebalan bervariasi mulai dari Bwg 0.5 hingga Bwg 1.2, menyesuaikan ukuran ducting dan tekanan (pressure)." },
+      { question: "Apakah melayani jasa instalasinya juga?", answer: "Tentu, kami menangani end-to-end mulai dari desain dimensi, fabrikasi mesin, hingga instalasi di lapangan." },
+    ],
+    metaTitle: "Fabrikasi Sheet Metal Ducting & Textile Duct | PAS HVAC",
+    metaDesc: "Pembuatan saluran udara (ducting) standar SMACNA. Berpengalaman untuk proyek industri, komersial, dengan BJLS dan Textile Duct.",
+    targetKeyword: "Fabrikasi Ducting BJLS SMACNA",
+  }
 ];
 
 export const statsData = [
