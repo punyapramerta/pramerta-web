@@ -80,6 +80,18 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
   },
+  icons: {
+    icon: [
+      {
+        url: '/images/logopas.png',
+        media: '(prefers-color-scheme: light)',
+      },
+      {
+        url: '/images/logopas_footer.PNG',
+        media: '(prefers-color-scheme: dark)',
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
