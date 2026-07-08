@@ -61,17 +61,7 @@ export default async function ProductDetailPage({ params }: Props) {
             "name": product.name,
             "description": product.description,
             "brand": { "@type": "Brand", "name": product.badge || "PAS HVAC" },
-            "image": product.image || undefined,
-            "offers": {
-              "@type": "Offer",
-              "availability": "https://schema.org/InStock",
-              "areaServed": "ID",
-              "seller": {
-                "@type": "Organization",
-                "name": "PT. Pratama Amerta Solusi",
-                "url": "https://www.pramerta.co.id",
-              },
-            },
+            "image": product.image || undefined
           }),
         }}
       />
