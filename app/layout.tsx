@@ -18,7 +18,7 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
 });
 
-const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "";
+const GOOGLE_TAG_ID = process.env.NEXT_PUBLIC_GOOGLE_TAG_ID ?? "";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.pramerta.co.id"),
@@ -172,11 +172,11 @@ export default function RootLayout({
         {children}
         <FloatingWhatsApp />
 
-        {/* Google Analytics 4 */}
-        {GA_MEASUREMENT_ID && (
+        {/* Google Tag (gtag.js) */}
+        {GOOGLE_TAG_ID && (
           <>
             <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+              src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_TAG_ID}`}
               strategy="afterInteractive"
             />
             <Script id="gtag-init" strategy="afterInteractive">
@@ -184,7 +184,7 @@ export default function RootLayout({
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${GA_MEASUREMENT_ID}', { page_path: window.location.pathname });
+                gtag('config', '${GOOGLE_TAG_ID}', { page_path: window.location.pathname });
               `}
             </Script>
           </>
