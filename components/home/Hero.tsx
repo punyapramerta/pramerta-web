@@ -5,6 +5,7 @@ import { useLeadForm } from "@/hooks/useLeadForm";
 import { useAppData } from "@/hooks/useAppData";
 import { cn } from "@/lib/utils";
 import { WA_NUMBER } from "@/lib/repositories/dataRepository";
+import Image from "next/image";
 
 export default function Hero() {
   const formId = useId();
@@ -26,7 +27,15 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative overflow-hidden py-28 flex items-center bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}>
+    <section className="relative overflow-hidden py-28 flex items-center bg-black/5">
+      {/* Background image optimized for LCP */}
+      <Image
+        src="/images/hero-bg.jpg"
+        alt="Background PAS HVAC"
+        fill
+        className="object-cover object-center -z-10"
+        priority
+      />
       {/* Subtle overlay for the background image */}
       <div className="absolute inset-0 bg-black/5 pointer-events-none"></div>
       

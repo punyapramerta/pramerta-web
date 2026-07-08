@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getProducts } from "@/lib/supabase/queries";
 import { WA_NUMBER } from "@/lib/repositories/dataRepository";
 
@@ -32,10 +33,11 @@ export default async function ProductTeaser() {
                 <Link href={product.href} className="absolute inset-0 z-10" aria-label={`Lihat detail ${product.name}`} />
               )}
               <div className="relative mb-6 h-44 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-gray-100">
-                <img
+                <Image
                   alt={product.imageAlt ?? product.name}
-                  className={`w-full h-full transition-transform duration-500 group-hover:scale-105 ${product.imageCover ? "object-cover" : "object-contain max-h-40"}`}
+                  className={`transition-transform duration-500 group-hover:scale-105 ${product.imageCover ? "object-cover" : "object-contain p-2"}`}
                   src={product.image}
+                  fill
                 />
               </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useAppData } from "@/hooks/useAppData";
 import { WA_NUMBER } from "@/lib/repositories/dataRepository";
 
@@ -13,10 +14,12 @@ export default function About() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left: Image */}
           <div className="relative">
-            <img 
+            <Image 
               alt="HVAC Industrial Installation" 
               className="rounded-2xl shadow-xl w-full object-cover aspect-[4/3]" 
               src="/images/page1_img1.jpeg"
+              width={800}
+              height={600}
             />
             {/* ISO badge overlay */}
             <div className="absolute -bottom-5 -right-4 bg-white px-5 py-4 rounded-xl shadow-lg border border-gray-100 hidden md:flex items-center gap-3">

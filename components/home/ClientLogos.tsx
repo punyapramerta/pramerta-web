@@ -1,4 +1,5 @@
 import { getClientLogos } from "@/lib/supabase/queries";
+import Image from "next/image";
 
 export const revalidate = 60;
 
@@ -27,9 +28,11 @@ export default async function ClientLogos() {
         <div className="flex flex-shrink-0 gap-14 pr-14 animate-marquee items-center">
           {repeated.map((client, i) => (
             <div key={`set1-${client.name}-${i}`} className="inline-flex items-center justify-center flex-shrink-0">
-              <img
+              <Image
                 alt={client.name}
                 src={client.image}
+                width={180}
+                height={80}
                 className="h-20 w-auto max-w-[180px] object-contain transition-all duration-300 grayscale hover:grayscale-0"
               />
             </div>
@@ -38,9 +41,11 @@ export default async function ClientLogos() {
         <div className="flex flex-shrink-0 gap-14 pr-14 animate-marquee items-center" aria-hidden="true">
           {repeated.map((client, i) => (
             <div key={`set2-${client.name}-${i}`} className="inline-flex items-center justify-center flex-shrink-0">
-              <img
+              <Image
                 alt={client.name}
                 src={client.image}
+                width={180}
+                height={80}
                 className="h-20 w-auto max-w-[180px] object-contain transition-all duration-300 grayscale hover:grayscale-0"
               />
             </div>
