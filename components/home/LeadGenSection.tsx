@@ -60,6 +60,7 @@ export default function LeadGenSection() {
                 ) : (
                   <form onSubmit={onSubmit} className="space-y-3">
                     <input 
+                      aria-label="Nama Lengkap"
                       {...register("nama")}
                       className={cn(
                         "w-full bg-gray-50 border border-gray-100 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none",
@@ -69,6 +70,7 @@ export default function LeadGenSection() {
                       type="text"
                     />
                     <input 
+                      aria-label="Nama Perusahaan"
                       {...register("perusahaan")}
                       className={cn(
                         "w-full bg-gray-50 border border-gray-100 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none",
@@ -78,6 +80,7 @@ export default function LeadGenSection() {
                       type="text"
                     />
                     <input 
+                      aria-label="Nomor WhatsApp"
                       {...register("whatsapp")}
                       className={cn(
                         "w-full bg-gray-50 border border-gray-100 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none",
@@ -87,6 +90,7 @@ export default function LeadGenSection() {
                       type="tel"
                     />
                     <select 
+                      aria-label="Kebutuhan"
                       {...register("kebutuhan")}
                       className={cn(
                         "w-full bg-gray-50 border border-gray-100 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none cursor-pointer",

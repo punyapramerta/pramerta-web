@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import { useLeadForm } from "@/hooks/useLeadForm";
 import { useAppData } from "@/hooks/useAppData";
 import { cn } from "@/lib/utils";
 import { WA_NUMBER } from "@/lib/repositories/dataRepository";
 
 export default function Hero() {
+  const formId = useId();
   const { hero, leadForm } = useAppData();
   const { 
     register, 
@@ -85,8 +86,9 @@ export default function Hero() {
               <form onSubmit={handleSubmit(onFirstStep)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-outline uppercase tracking-widest">Nama Lengkap</label>
+                    <label htmlFor={`${formId}-nama`} className="text-[10px] font-bold text-outline uppercase tracking-widest">Nama Lengkap</label>
                     <input 
+                      id={`${formId}-nama`}
                       {...register("nama")}
                       className={cn(
                         "w-full bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm p-3 transition-all outline-none",
@@ -97,8 +99,9 @@ export default function Hero() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-outline uppercase tracking-widest">Nama Perusahaan</label>
+                    <label htmlFor={`${formId}-perusahaan`} className="text-[10px] font-bold text-outline uppercase tracking-widest">Nama Perusahaan</label>
                     <input 
+                      id={`${formId}-perusahaan`}
                       {...register("perusahaan")}
                       className={cn(
                         "w-full bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm p-3 transition-all outline-none",
@@ -111,8 +114,9 @@ export default function Hero() {
                 </div>
                 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-outline uppercase tracking-widest">Nomor WhatsApp</label>
+                  <label htmlFor={`${formId}-whatsapp`} className="text-[10px] font-bold text-outline uppercase tracking-widest">Nomor WhatsApp</label>
                   <input 
+                    id={`${formId}-whatsapp`}
                     {...register("whatsapp")}
                     className={cn(
                       "w-full bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm p-3 transition-all outline-none",
@@ -124,9 +128,10 @@ export default function Hero() {
                 </div>
                 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-outline uppercase tracking-widest">Kebutuhan HVAC</label>
+                  <label htmlFor={`${formId}-kebutuhan`} className="text-[10px] font-bold text-outline uppercase tracking-widest">Kebutuhan HVAC</label>
                   <div className="relative">
                     <select 
+                      id={`${formId}-kebutuhan`}
                       {...register("kebutuhan")}
                       className={cn(
                         "w-full bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm p-3 transition-all outline-none appearance-none cursor-pointer",

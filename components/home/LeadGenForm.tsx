@@ -110,6 +110,7 @@ export default function LeadGenForm() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <input
+                        aria-label="Nama Lengkap"
                         {...register("nama")}
                         type="text"
                         placeholder="Nama Anda"
@@ -119,6 +120,7 @@ export default function LeadGenForm() {
                     </div>
                     <div>
                       <input
+                        aria-label="Nama Perusahaan"
                         {...register("perusahaan")}
                         type="text"
                         placeholder="Nama Perusahaan"
@@ -130,6 +132,7 @@ export default function LeadGenForm() {
 
                   <div>
                     <input
+                      aria-label="Nomor WhatsApp"
                       {...register("whatsapp")}
                       type="tel"
                       placeholder="Nomor WhatsApp"
@@ -140,6 +143,7 @@ export default function LeadGenForm() {
 
                   <div>
                     <select
+                      aria-label="Kebutuhan"
                       {...register("kebutuhan")}
                       className="w-full px-5 py-4 text-sm font-bold border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 bg-neutral-50 text-neutral-900 transition-all appearance-none cursor-pointer font-body"
                     >
@@ -153,6 +157,7 @@ export default function LeadGenForm() {
 
                   <div>
                     <textarea
+                      aria-label="Keterangan tambahan"
                       {...register("pesan")}
                       rows={3}
                       placeholder="Keterangan tambahan (kapasitas, lokasi, dll)"

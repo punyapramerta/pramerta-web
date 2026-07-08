@@ -1,9 +1,11 @@
 "use client";
 
+import { useId } from "react";
 import { useLeadForm } from "@/hooks/useLeadForm";
 import { useAppData } from "@/hooks/useAppData";
 
 export default function PortfolioSidebarForm() {
+  const formId = useId();
   const { leadForm } = useAppData();
   const {
     register,
@@ -36,8 +38,9 @@ export default function PortfolioSidebarForm() {
 
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <div>
-          <label className="block text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest mb-1.5">Nama Lengkap</label>
+          <label htmlFor={`${formId}-nama`} className="block text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest mb-1.5">Nama Lengkap</label>
           <input
+            id={`${formId}-nama`}
             {...register("nama")}
             type="text"
             placeholder="Cth: John Doe"
@@ -47,8 +50,9 @@ export default function PortfolioSidebarForm() {
         </div>
 
         <div>
-          <label className="block text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest mb-1.5">Nomor WhatsApp</label>
+          <label htmlFor={`${formId}-whatsapp`} className="block text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest mb-1.5">Nomor WhatsApp</label>
           <input
+            id={`${formId}-whatsapp`}
             {...register("whatsapp")}
             type="tel"
             placeholder="Cth: 08123456789"
@@ -58,9 +62,10 @@ export default function PortfolioSidebarForm() {
         </div>
 
         <div>
-          <label className="block text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest mb-1.5">Kebutuhan</label>
+          <label htmlFor={`${formId}-kebutuhan`} className="block text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest mb-1.5">Kebutuhan</label>
           <div className="relative">
             <select
+              id={`${formId}-kebutuhan`}
               {...register("kebutuhan")}
               className="w-full px-4 py-3 text-sm font-bold border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-neutral-50 text-neutral-900 transition-all appearance-none cursor-pointer"
             >
