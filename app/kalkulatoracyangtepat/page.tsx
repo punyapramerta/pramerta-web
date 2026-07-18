@@ -10,10 +10,25 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Kalkulator Kebutuhan AC (PK) | Pramerta HVAC",
-  description:
-    "Hitung kebutuhan kapasitas AC (PK) ruangan Anda dengan akurat. Temukan panduan dan tips memilih sistem pendingin (HVAC) yang tepat dan hemat energi.",
+  description: "Jangan salah pilih PK AC! Hitung kebutuhan kapasitas AC ruangan Anda dengan akurat sekarang juga menggunakan Kalkulator AC dari Pramerta HVAC.",
   alternates: {
     canonical: "https://www.pramerta.co.id/kalkulatoracyangtepat",
+  },
+  openGraph: {
+    title: "Kalkulator Kebutuhan AC (PK) | Pramerta HVAC",
+    description: "Jangan salah pilih PK AC! Hitung kebutuhan kapasitas AC ruangan Anda dengan akurat sekarang juga menggunakan Kalkulator AC dari Pramerta HVAC.",
+    url: "https://www.pramerta.co.id/kalkulatoracyangtepat",
+    siteName: "Pramerta HVAC",
+    images: [
+      {
+        url: "/images/og-kalkulator-ac-compressed.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Kalkulator Kebutuhan AC Pramerta HVAC",
+      },
+    ],
+    locale: "id_ID",
+    type: "website",
   },
 };
 
