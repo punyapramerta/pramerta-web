@@ -56,7 +56,10 @@ export default function Footer() {
           <div>
             <h4 className="font-bold mb-6 text-white uppercase tracking-widest text-[10px]">Social Media</h4>
             <ul className="space-y-3 text-sm text-gray-500">
-              <li><a className="hover:text-white transition-colors" href="https://www.instagram.com/pashvac.id" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+              <li><a className="hover:text-white transition-colors" href="https://www.instagram.com/pratama.amerta/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+              <li><a className="hover:text-white transition-colors" href="https://www.facebook.com/pramerta01/" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+              <li><a className="hover:text-white transition-colors" href="https://www.youtube.com/@pratamaamerta" target="_blank" rel="noopener noreferrer">YouTube</a></li>
+              <li><a className="hover:text-white transition-colors" href="https://www.tiktok.com/@pratama.amerta" target="_blank" rel="noopener noreferrer">TikTok</a></li>
               <li><a className="hover:text-white transition-colors" href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Halo PAS HVAC, saya ingin menghubungi tim Anda.")}`} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
             </ul>
           </div>
