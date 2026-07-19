@@ -13,7 +13,18 @@ export default function CalculatorForm() {
   } | null>(null);
 
   const KONSTANTA = 550;
-  const AVAILABLE_PK = [0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, 6];
+  const BTU_PK_MAPPING = [
+    { limit: 5000, pk: 0.5 },
+    { limit: 7000, pk: 0.75 },
+    { limit: 9000, pk: 1 },
+    { limit: 12000, pk: 1.5 },
+    { limit: 18000, pk: 2 },
+    { limit: 24000, pk: 2.5 },
+    { limit: 27000, pk: 3 },
+    { limit: 36000, pk: 4 },
+    { limit: 48000, pk: 5 },
+    { limit: 54000, pk: 6 },
+  ];
   const WHATSAPP_NUMBER = "6285880006888";
 
   const handleCalculate = (e: React.FormEvent) => {
@@ -28,13 +39,13 @@ export default function CalculatorForm() {
       return;
     }
 
-    const btu = p * l * t * KONSTANTA;
+    const btu = (p * l * t / 3) * KONSTANTA;
     const exactPk = btu / 9000;
 
     let recommendedPk: number | "sales" = "sales";
-    for (const pk of AVAILABLE_PK) {
-      if (pk >= exactPk) {
-        recommendedPk = pk;
+    for (const mapping of BTU_PK_MAPPING) {
+      if (btu <= mapping.limit) {
+        recommendedPk = mapping.pk;
         break;
       }
     }
