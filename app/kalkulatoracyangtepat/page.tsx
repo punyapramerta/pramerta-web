@@ -66,6 +66,41 @@ export default async function KalkulatorACPage() {
             <CalculatorForm />
           </section>
 
+          {/* SEO Article Section: Cara Menghitung PK AC */}
+          <section className="mb-24 bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-neutral-100 max-w-5xl mx-auto prose prose-neutral max-w-none">
+            <h2 className="text-3xl font-headline font-extrabold text-neutral-900 mb-6">
+              Cara Menghitung PK AC dengan PK AC Kalkulator
+            </h2>
+            
+            <p className="text-neutral-600 font-body leading-relaxed mb-6">
+              Menentukan kapasitas pendingin ruangan tidak boleh dilakukan sembarangan. Menggunakan <strong>PK AC Kalkulator</strong> adalah langkah paling cerdas untuk memastikan Anda mendapatkan unit AC yang tepat. Kapasitas AC yang pas tidak hanya membuat ruangan cepat dingin, tetapi juga membantu Anda menghemat tagihan listrik bulanan dan memperpanjang umur kompresor AC.
+            </p>
+            
+            <h3 className="text-2xl font-headline font-extrabold text-neutral-900 mb-4 mt-8">
+              Rumus Cara Menghitung PK AC
+            </h3>
+            <p className="text-neutral-600 font-body leading-relaxed mb-6">
+              Di balik kemudahan penggunaan <strong>kalkulator AC</strong> dari Pramerta HVAC, terdapat rumus teruji yang kami gunakan untuk menghitung kebutuhan <strong>BTU (British Thermal Unit)</strong> ruangan Anda. Rumus dasarnya adalah mengalikan Volume Ruangan lalu menyesuaikannya dengan nilai konstanta standar:
+            </p>
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6 text-center">
+              <code className="text-primary-700 font-bold text-lg">
+                (Panjang x Lebar x Tinggi / 3) x 550 BTU
+              </code>
+            </div>
+            <p className="text-neutral-600 font-body leading-relaxed mb-6">
+              Setelah mendapatkan nilai total BTU/h, kalkulator kami akan memetakannya secara otomatis ke ukuran <strong>PK (Paardekracht)</strong> yang paling sesuai, mulai dari 0.5 PK hingga 6 PK.
+            </p>
+
+            <h3 className="text-2xl font-headline font-extrabold text-neutral-900 mb-4 mt-8">
+              Keuntungan Menggunakan Kalkulator Kebutuhan AC
+            </h3>
+            <ul className="space-y-3 text-neutral-600 font-body list-disc pl-5">
+              <li><strong>Akurasi Tinggi:</strong> Menghindari pembelian AC yang kekecilan (kurang dingin) atau kebesaran (boros listrik dan sering mati-nyala).</li>
+              <li><strong>Efisiensi Energi:</strong> AC dengan kapasitas PK yang tepat akan mendinginkan ruangan dengan waktu yang ideal sehingga kompresor dapat beristirahat dan menghemat daya.</li>
+              <li><strong>Praktis & Mudah:</strong> Cukup masukkan dimensi ruangan (panjang, lebar, dan tinggi dalam meter) dan dapatkan hasil perhitungan akurat dalam sekejap.</li>
+            </ul>
+          </section>
+
           {/* SEO Optimized Tips Section */}
           <section className="mb-24 bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-neutral-100 max-w-5xl mx-auto">
             <div className="text-center mb-10">
