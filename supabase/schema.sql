@@ -44,6 +44,21 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   updated_at       TIMESTAMPTZ DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS telegram_sessions (
+  chat_id    BIGINT PRIMARY KEY,
+  step       TEXT NOT NULL DEFAULT 'idle',
+  data       JSONB DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS telegram_users (
+  user_id    BIGINT PRIMARY KEY,
+  username   TEXT,
+  first_name TEXT,
+  is_active  BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS leads (
   id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   nama      TEXT NOT NULL,
