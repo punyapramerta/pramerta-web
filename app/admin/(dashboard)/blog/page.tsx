@@ -150,6 +150,63 @@ export default function AdminBlogPage() {
     });
   };
 
+  const htmlToBlocks = (html: string): ArticleBlock[] => {
+    if (!html || typeof window === "undefined") return [];
+
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      const parsedBlocks: ArticleBlock[] = [];
+      const children = Array.from(doc.body.children);
+
+      if (children.length === 0 && html.trim()) {
+        return [{ id: Math.random().toString(36).slice(2, 9), type: "p", content: html.trim() }];
+      }
+
+      let isFirstParagraph = true;
+
+      children.forEach((el) => {
+        const tagName = el.tagName.toLowerCase();
+        const className = el.className || "";
+
+        if (tagName === "h2") {
+          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "h2", content: el.innerHTML.trim() });
+        } else if (tagName === "h3") {
+          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "h3", content: el.innerHTML.trim() });
+        } else if (tagName === "p") {
+          const isIntro = className.includes("text-xl") || className.includes("font-medium") || isFirstParagraph;
+          if (isIntro && isFirstParagraph) {
+            parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "intro", content: el.innerHTML.trim() });
+            isFirstParagraph = false;
+          } else {
+            parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "p", content: el.innerHTML.trim() });
+          }
+        } else if (tagName === "ul" || tagName === "ol") {
+          const lis = Array.from(el.querySelectorAll("li")).map((li) => li.innerHTML.trim()).filter(Boolean);
+          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "ul", content: lis.join("\n") });
+        } else if (tagName === "div" && (className.includes("bg-blue-50") || className.includes("border-l-4") || el.querySelector("p"))) {
+          const pElements = Array.from(el.querySelectorAll("p"));
+          let quoteText = "";
+          if (pElements.length > 0) {
+            quoteText = pElements[0].innerHTML.trim().replace(/^["']|["']$/g, "");
+          } else {
+            quoteText = el.innerHTML.trim();
+          }
+          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "quote", content: quoteText });
+        } else if (tagName === "blockquote") {
+          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "quote", content: el.innerHTML.trim().replace(/^["']|["']$/g, "") });
+        } else if (el.textContent?.trim()) {
+          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "p", content: el.innerHTML.trim() });
+        }
+      });
+
+      return parsedBlocks;
+    } catch (err) {
+      console.error("Failed to parse HTML to blocks:", err);
+      return [{ id: Math.random().toString(36).slice(2, 9), type: "p", content: html }];
+    }
+  };
+
   const openAdd = () => {
     setForm(EMPTY_FORM);
     setEditSlug(null);
@@ -164,9 +221,29 @@ export default function AdminBlogPage() {
     setEditSlug(post.slug);
     setMode("edit");
     setFeedback(null);
-    setContentMode("html");
-    setBlocks([]);
+    setContentMode("visual");
+    const parsed = htmlToBlocks(post.content);
+    setBlocks(parsed);
   };
+
+  const switchToVisual = () => {
+    if (contentMode !== "visual") {
+      const parsed = htmlToBlocks(form.content);
+      setBlocks(parsed);
+      setContentMode("visual");
+    }
+  };
+
+  const switchToHtml = () => {
+    if (contentMode !== "html") {
+      if (blocks.length > 0) {
+        const generatedHtml = blocksToHtml(blocks);
+        setField("content", generatedHtml);
+      }
+      setContentMode("html");
+    }
+  };
+
 
   const blocksToHtml = (currentBlocks: ArticleBlock[]) => {
     return currentBlocks.map(b => {
@@ -457,13 +534,15 @@ export default function AdminBlogPage() {
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest">Konten Artikel Lengkap</label>
               <div className="flex bg-gray-100 p-1 rounded-lg">
                 <button
-                  onClick={() => setContentMode("visual")}
+                  type="button"
+                  onClick={switchToVisual}
                   className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${contentMode === "visual" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
                 >
                   Mode Visual (Per Part)
                 </button>
                 <button
-                  onClick={() => setContentMode("html")}
+                  type="button"
+                  onClick={switchToHtml}
                   className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${contentMode === "html" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
                 >
                   Mode HTML Mentah

@@ -5,6 +5,7 @@ import {
   sendTelegramMessage,
   sendTelegramChatAction,
   answerTelegramCallbackQuery,
+  removeTelegramMessageReplyMarkup,
   getAudienceKeyboard,
   getPurposeKeyboard,
   getAdminEditKeyboard,
@@ -12,7 +13,7 @@ import {
 
 type TelegramSession = {
   chat_id: number;
-  step: "idle" | "awaiting_topic" | "awaiting_audience" | "awaiting_purpose";
+  step: "idle" | "awaiting_topic" | "awaiting_audience" | "awaiting_purpose" | "generating";
   data: {
     topic?: string;
     audience?: string;
@@ -103,14 +104,14 @@ export async function POST(request: Request) {
     if (update.callback_query) {
       const cb = update.callback_query;
       const chatId = cb.message?.chat?.id;
+      const messageId = cb.message?.message_id;
       const userId = cb.from?.id;
       const data = cb.data as string;
 
       if (chatId && userId) {
-        await answerTelegramCallbackQuery(cb.id);
-
         const authorized = await isUserAuthorized(userId);
         if (!authorized) {
+          await answerTelegramCallbackQuery(cb.id, "🔐 Akses Terproteksi");
           await sendTelegramMessage(chatId, "🔐 *Akses Terproteksi:* Silakan masukkan PIN Admin terlebih dahulu.");
           return NextResponse.json({ ok: true });
         }
@@ -118,6 +119,15 @@ export async function POST(request: Request) {
         const session = await getSession(chatId);
 
         if (data.startsWith("aud:")) {
+          if (session.step !== "awaiting_audience" || !session.data.topic) {
+            await answerTelegramCallbackQuery(cb.id, "⚠️ Sesi ini sudah kadaluarsa. Ketik /buat untuk draf baru.");
+            if (messageId) await removeTelegramMessageReplyMarkup(chatId, messageId);
+            return NextResponse.json({ ok: true });
+          }
+
+          await answerTelegramCallbackQuery(cb.id);
+          if (messageId) await removeTelegramMessageReplyMarkup(chatId, messageId);
+
           const audienceChoice = data.replace("aud:", "");
           const finalAudience = audienceChoice === "default" ? "B2B, Plant Manager, Engineer, Procurement" : audienceChoice;
           const updatedData = { ...session.data, audience: finalAudience };
@@ -132,12 +142,33 @@ export async function POST(request: Request) {
         }
 
         if (data.startsWith("purp:")) {
+          if (session.step !== "awaiting_purpose" || !session.data.topic) {
+            await answerTelegramCallbackQuery(cb.id, "⚠️ Sesi ini sudah kadaluarsa. Ketik /buat untuk draf baru.");
+            if (messageId) await removeTelegramMessageReplyMarkup(chatId, messageId);
+            return NextResponse.json({ ok: true });
+          }
+
+          await answerTelegramCallbackQuery(cb.id);
+          if (messageId) await removeTelegramMessageReplyMarkup(chatId, messageId);
+
           const purposeChoice = data.replace("purp:", "");
           const updatedData = { ...session.data, purpose: purposeChoice };
-          await setSession(chatId, "idle", {});
 
-          // Trigger generation
-          await handleArticleGeneration(chatId, updatedData);
+          // Mark session step as 'generating' so concurrent taps/webhooks are ignored
+          await setSession(chatId, "generating", updatedData);
+
+          // Send confirmation message to user
+          await sendTelegramMessage(
+            chatId,
+            `⏳ *Sedang meracik draf artikel sesuai Standard Penulisan Pramerta...*\n\n⚙️ _Memproses via Gemini AI & menyimpan draf ke database Supabase... Mohon tunggu sebentar (sekitar 10-20 detik)._`
+          );
+          await sendTelegramChatAction(chatId, "typing");
+
+          // Trigger generation asynchronously without blocking HTTP response
+          handleArticleGeneration(chatId, updatedData).catch((err) => {
+            console.error("Async article generation error:", err);
+          });
+
           return NextResponse.json({ ok: true });
         }
       }
@@ -202,6 +233,12 @@ export async function POST(request: Request) {
 
     const session = await getSession(chatId);
 
+    // If currently generating, ignore new text inputs to avoid state corruption
+    if (session.step === "generating") {
+      await sendTelegramMessage(chatId, "⏳ *Artikel sedang diproses.* Mohon tunggu hingga draf selesai dibuat.");
+      return NextResponse.json({ ok: true });
+    }
+
     // Flow Step 1: Awaiting Topic
     if (session.step === "awaiting_topic") {
       if (!text) {
@@ -236,11 +273,25 @@ export async function POST(request: Request) {
 
     // Flow Step 3: Awaiting Purpose (Typed text)
     if (session.step === "awaiting_purpose") {
+      if (!session.data.topic) {
+        await sendTelegramMessage(chatId, "❌ Sesi kadaluarsa: Kata kunci/topik tidak ditemukan. Ketik `/buat` untuk ulang.");
+        await setSession(chatId, "idle", {});
+        return NextResponse.json({ ok: true });
+      }
+
       const purposeInput = text || "Edukasi & SEO";
       const updatedData = { ...session.data, purpose: purposeInput };
-      await setSession(chatId, "idle", {});
+      await setSession(chatId, "generating", updatedData);
 
-      await handleArticleGeneration(chatId, updatedData);
+      await sendTelegramMessage(
+        chatId,
+        `⏳ *Sedang meracik draf artikel sesuai Standard Penulisan Pramerta...*\n\n⚙️ _Memproses via Gemini AI & menyimpan draf ke database Supabase... Mohon tunggu sebentar (sekitar 10-20 detik)._`
+      );
+      await sendTelegramChatAction(chatId, "typing");
+
+      handleArticleGeneration(chatId, updatedData).catch((err) => {
+        console.error("Async article generation error:", err);
+      });
       return NextResponse.json({ ok: true });
     }
 
@@ -263,46 +314,41 @@ async function handleArticleGeneration(
   chatId: number,
   sessionData: { topic?: string; audience?: string; purpose?: string }
 ) {
-  const { topic, audience, purpose } = sessionData;
+  try {
+    const { topic, audience, purpose } = sessionData;
 
-  if (!topic) {
-    await sendTelegramMessage(chatId, "❌ Terjadi kesalahan: Kata kunci/topik tidak ditemukan. Ketik `/buat` untuk ulang.");
-    return;
-  }
+    if (!topic) {
+      await sendTelegramMessage(chatId, "❌ Terjadi kesalahan: Kata kunci/topik tidak ditemukan. Ketik `/buat` untuk ulang.");
+      return;
+    }
 
-  await sendTelegramMessage(
-    chatId,
-    `⏳ *Sedang meracik draf artikel sesuai Standard Penulisan Pramerta...*\n\n⚙️ _Memproses via Gemini AI & menyimpan draf ke database Supabase... Mohon tunggu sebentar (sekitar 10-20 detik)._`
-  );
-  await sendTelegramChatAction(chatId, "typing");
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      await sendTelegramMessage(chatId, "❌ Error: GEMINI_API_KEY belum dikonfigurasi di server.");
+      return;
+    }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    await sendTelegramMessage(chatId, "❌ Error: GEMINI_API_KEY belum dikonfigurasi di server.");
-    return;
-  }
-
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
-    generationConfig: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: SchemaType.OBJECT,
-        properties: {
-          title: { type: SchemaType.STRING, description: "Judul artikel SEO friendly (H1)" },
-          slug: { type: SchemaType.STRING, description: "URL slug dari judul, huruf kecil dipisah strip" },
-          excerpt: { type: SchemaType.STRING, description: "Ringkasan pendek 2-3 kalimat" },
-          metaTitle: { type: SchemaType.STRING, description: "Meta title optimal maksimal 60 karakter" },
-          metaDesc: { type: SchemaType.STRING, description: "Meta description maksimal 160 karakter untuk CTR tinggi" },
-          content: { type: SchemaType.STRING, description: "Konten lengkap artikel dalam format HTML semantik dengan Tailwind CSS" },
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash",
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: SchemaType.OBJECT,
+          properties: {
+            title: { type: SchemaType.STRING, description: "Judul artikel SEO friendly (H1)" },
+            slug: { type: SchemaType.STRING, description: "URL slug dari judul, huruf kecil dipisah strip" },
+            excerpt: { type: SchemaType.STRING, description: "Ringkasan pendek 2-3 kalimat" },
+            metaTitle: { type: SchemaType.STRING, description: "Meta title optimal maksimal 60 karakter" },
+            metaDesc: { type: SchemaType.STRING, description: "Meta description maksimal 160 karakter untuk CTR tinggi" },
+            content: { type: SchemaType.STRING, description: "Konten lengkap artikel dalam format HTML semantik dengan Tailwind CSS" },
+          },
+          required: ["title", "slug", "excerpt", "metaTitle", "metaDesc", "content"],
         },
-        required: ["title", "slug", "excerpt", "metaTitle", "metaDesc", "content"],
       },
-    },
-  });
+    });
 
-  const prompt = `
+    const prompt = `
     Bertindaklah sebagai Senior SEO Content Writer & HVAC Engineer untuk PAS HVAC (PT. Pratama Amerta Solusi).
     Tulis artikel blog B2B HVAC profesional, edukatif, dan meyakinkan dalam bahasa Indonesia.
 
@@ -335,63 +381,71 @@ async function handleArticleGeneration(
     - Paragraf akhir berupa penutup persuasif yang mengajak pembaca konsultasi / site survey gratis dengan PAS HVAC.
   `;
 
-  const result = await model.generateContent(prompt);
-  const responseText = result.response.text();
-  const articleData = JSON.parse(responseText);
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
+    const articleData = JSON.parse(responseText);
 
-  // Ensure unique slug
-  let slug = articleData.slug || topic.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  const supabase = createServerClient();
+    // Ensure unique slug
+    let slug = articleData.slug || topic.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const supabase = createServerClient();
 
-  // Check if slug exists
-  const { data: existingPost } = await supabase
-    .from("blog_posts")
-    .select("slug")
-    .eq("slug", slug)
-    .single();
+    // Check if slug exists
+    const { data: existingPost } = await supabase
+      .from("blog_posts")
+      .select("slug")
+      .eq("slug", slug)
+      .single();
 
-  if (existingPost) {
-    slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
+    if (existingPost) {
+      slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
+    }
+
+    // Insert draft post to Supabase
+    const newPostRow = {
+      slug,
+      title: articleData.title,
+      category: "Edukasi",
+      read_time: "5 Menit Baca",
+      author: "Tim Engineer PAS HVAC",
+      content: articleData.content,
+      excerpt: articleData.excerpt,
+      meta_title: articleData.metaTitle,
+      meta_desc: articleData.metaDesc,
+      target_keyword: topic,
+      status: "draft",
+      image_url: null, // Explicitly null per user instruction
+      published_at: null,
+    };
+
+    const { error: dbError } = await supabase.from("blog_posts").insert(newPostRow);
+
+    if (dbError) {
+      console.error("Supabase Insert Error:", dbError);
+      await sendTelegramMessage(chatId, `❌ Gagal menyimpan draf ke database: ${dbError.message}`);
+      return;
+    }
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || "https://pramerta.com";
+    const adminUrl = `${siteUrl}/admin`;
+
+    const successMessage =
+      `✅ *Draf Artikel Berhasil Dibuat!*\n\n` +
+      `📌 *Judul:* ${articleData.title}\n` +
+      `🔑 *Keyword Utama:* \`${topic}\` \n` +
+      `📝 *Status:* Draft (Tersedia di Halaman Admin)\n\n` +
+      `⚠️ *Peringatan / Catatan:*\n` +
+      `Artikel ini telah disimpan sebagai draf. Sebelum di-publish, mohon **dicek ulang / dirapikan** dan **ditambahkan Gambar Cover (Featured Image)** di halaman Admin Web.\n\n` +
+      `👇 *Klik tombol di bawah untuk langsung mengedit:*`;
+
+    await sendTelegramMessage(chatId, successMessage, {
+      reply_markup: getAdminEditKeyboard(adminUrl),
+    });
+  } catch (err: any) {
+    console.error("handleArticleGeneration error:", err);
+    await sendTelegramMessage(chatId, `❌ Terjadi kesalahan saat memproses draf artikel: ${err.message || "Terjadi kesalahan"}`);
+  } finally {
+    // Reset session back to idle ONLY when done
+    await setSession(chatId, "idle", {});
   }
-
-  // Insert draft post to Supabase
-  const newPostRow = {
-    slug,
-    title: articleData.title,
-    category: "Edukasi",
-    read_time: "5 Menit Baca",
-    author: "Tim Engineer PAS HVAC",
-    content: articleData.content,
-    excerpt: articleData.excerpt,
-    meta_title: articleData.metaTitle,
-    meta_desc: articleData.metaDesc,
-    target_keyword: topic,
-    status: "draft",
-    image_url: null, // Explicitly null per user instruction
-    published_at: null,
-  };
-
-  const { error: dbError } = await supabase.from("blog_posts").insert(newPostRow);
-
-  if (dbError) {
-    console.error("Supabase Insert Error:", dbError);
-    await sendTelegramMessage(chatId, `❌ Gagal menyimpan draf ke database: ${dbError.message}`);
-    return;
-  }
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || "https://pramerta.com";
-  const adminUrl = `${siteUrl}/admin`;
-
-  const successMessage =
-    `✅ *Draf Artikel Berhasil Dibuat!*\n\n` +
-    `📌 *Judul:* ${articleData.title}\n` +
-    `🔑 *Keyword Utama:* \`${topic}\` \n` +
-    `📝 *Status:* Draft (Tersedia di Halaman Admin)\n\n` +
-    `⚠️ *Peringatan / Catatan:*\n` +
-    `Artikel ini telah disimpan sebagai draf. Sebelum di-publish, mohon **dicek ulang / dirapikan** dan **ditambahkan Gambar Cover (Featured Image)** di halaman Admin Web.\n\n` +
-    `👇 *Klik tombol di bawah untuk langsung mengedit:*`;
-
-  await sendTelegramMessage(chatId, successMessage, {
-    reply_markup: getAdminEditKeyboard(adminUrl),
-  });
 }
+

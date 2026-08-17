@@ -98,6 +98,29 @@ export async function answerTelegramCallbackQuery(
   }
 }
 
+export async function removeTelegramMessageReplyMarkup(
+  chatId: number | string,
+  messageId: number
+) {
+  try {
+    const token = getTelegramBotToken();
+    const url = `https://api.telegram.org/bot${token}/editMessageReplyMarkup`;
+
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        message_id: messageId,
+        reply_markup: { inline_keyboard: [] },
+      }),
+    });
+  } catch (err) {
+    console.error("Failed to remove reply markup:", err);
+  }
+}
+
+
 // ─── INLINE KEYBOARD PRESETS ─────────────────────────────────
 
 export function getAudienceKeyboard(): TelegramInlineKeyboardMarkup {
