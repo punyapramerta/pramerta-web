@@ -157,48 +157,85 @@ export default function AdminBlogPage() {
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, "text/html");
       const parsedBlocks: ArticleBlock[] = [];
-      const children = Array.from(doc.body.children);
 
-      if (children.length === 0 && html.trim()) {
-        return [{ id: Math.random().toString(36).slice(2, 9), type: "p", content: html.trim() }];
-      }
+      const getInner = (node: Element) => node.innerHTML.trim();
 
-      let isFirstParagraph = true;
+      const collectBlocks = (node: Node, isFirstParagraphRef: { current: boolean }) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.textContent?.trim();
+          if (text) {
+            parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "p", content: text });
+          }
+          return;
+        }
 
-      children.forEach((el) => {
+        if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+        const el = node as Element;
         const tagName = el.tagName.toLowerCase();
         const className = el.className || "";
 
-        if (tagName === "h2") {
-          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "h2", content: el.innerHTML.trim() });
-        } else if (tagName === "h3") {
-          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "h3", content: el.innerHTML.trim() });
-        } else if (tagName === "p") {
-          const isIntro = className.includes("text-xl") || className.includes("font-medium") || isFirstParagraph;
-          if (isIntro && isFirstParagraph) {
-            parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "intro", content: el.innerHTML.trim() });
-            isFirstParagraph = false;
-          } else {
-            parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "p", content: el.innerHTML.trim() });
-          }
-        } else if (tagName === "ul" || tagName === "ol") {
-          const lis = Array.from(el.querySelectorAll("li")).map((li) => li.innerHTML.trim()).filter(Boolean);
-          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "ul", content: lis.join("\n") });
-        } else if (tagName === "div" && (className.includes("bg-blue-50") || className.includes("border-l-4") || el.querySelector("p"))) {
+        // Quote block explicitly marked with bg-blue-50, border-l-4, or blockquote
+        const isQuoteBlock =
+          tagName === "blockquote" ||
+          (tagName === "div" && (className.includes("bg-blue-50") || className.includes("border-l-4")));
+
+        if (isQuoteBlock) {
           const pElements = Array.from(el.querySelectorAll("p"));
           let quoteText = "";
           if (pElements.length > 0) {
             quoteText = pElements[0].innerHTML.trim().replace(/^["']|["']$/g, "");
           } else {
-            quoteText = el.innerHTML.trim();
+            quoteText = el.innerHTML.trim().replace(/^["']|["']$/g, "");
           }
           parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "quote", content: quoteText });
-        } else if (tagName === "blockquote") {
-          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "quote", content: el.innerHTML.trim().replace(/^["']|["']$/g, "") });
-        } else if (el.textContent?.trim()) {
-          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "p", content: el.innerHTML.trim() });
+          return;
         }
-      });
+
+        if (tagName === "h2") {
+          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "h2", content: getInner(el) });
+          return;
+        }
+
+        if (tagName === "h3") {
+          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "h3", content: getInner(el) });
+          return;
+        }
+
+        if (tagName === "h1" || tagName === "h4" || tagName === "h5" || tagName === "h6") {
+          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "h3", content: getInner(el) });
+          return;
+        }
+
+        if (tagName === "p") {
+          const isIntro = className.includes("text-xl") || className.includes("font-medium") || isFirstParagraphRef.current;
+          if (isIntro && isFirstParagraphRef.current) {
+            parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "intro", content: getInner(el) });
+            isFirstParagraphRef.current = false;
+          } else {
+            parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "p", content: getInner(el) });
+          }
+          return;
+        }
+
+        if (tagName === "ul" || tagName === "ol") {
+          const lis = Array.from(el.querySelectorAll("li"))
+            .map((li) => li.innerHTML.trim())
+            .filter(Boolean);
+          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "ul", content: lis.join("\n") });
+          return;
+        }
+
+        // Recurse into child nodes for container elements (div, section, article, main, etc.)
+        if (el.childNodes.length > 0) {
+          Array.from(el.childNodes).forEach((child) => collectBlocks(child, isFirstParagraphRef));
+        } else if (el.textContent?.trim()) {
+          parsedBlocks.push({ id: Math.random().toString(36).slice(2, 9), type: "p", content: getInner(el) });
+        }
+      };
+
+      const isFirstParagraphRef = { current: true };
+      Array.from(doc.body.childNodes).forEach((child) => collectBlocks(child, isFirstParagraphRef));
 
       return parsedBlocks;
     } catch (err) {
