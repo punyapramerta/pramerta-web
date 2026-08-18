@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { createServerClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import {
@@ -164,9 +164,13 @@ export async function POST(request: Request) {
           );
           await sendTelegramChatAction(chatId, "typing");
 
-          // Trigger generation asynchronously without blocking HTTP response
-          handleArticleGeneration(chatId, updatedData).catch((err) => {
-            console.error("Async article generation error:", err);
+          // Trigger generation asynchronously via Next.js after() to prevent serverless freeze
+          after(async () => {
+            try {
+              await handleArticleGeneration(chatId, updatedData);
+            } catch (err) {
+              console.error("Async article generation error in after():", err);
+            }
           });
 
           return NextResponse.json({ ok: true });
@@ -289,8 +293,12 @@ export async function POST(request: Request) {
       );
       await sendTelegramChatAction(chatId, "typing");
 
-      handleArticleGeneration(chatId, updatedData).catch((err) => {
-        console.error("Async article generation error:", err);
+      after(async () => {
+        try {
+          await handleArticleGeneration(chatId, updatedData);
+        } catch (err) {
+          console.error("Async article generation error in after():", err);
+        }
       });
       return NextResponse.json({ ok: true });
     }
@@ -383,7 +391,12 @@ async function handleArticleGeneration(
 
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
-    const articleData = JSON.parse(responseText);
+    const cleanJson = responseText
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
+    const articleData = JSON.parse(cleanJson);
 
     // Ensure unique slug
     let slug = articleData.slug || topic.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
