@@ -1,5 +1,6 @@
 import { NextResponse, after } from "next/server";
-import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import { SchemaType } from "@google/generative-ai";
+import { getGeminiModel } from "@/lib/gemini";
 import { createServerClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import {
   sendTelegramMessage,
@@ -330,29 +331,19 @@ async function handleArticleGeneration(
       return;
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      await sendTelegramMessage(chatId, "❌ Error: GEMINI_API_KEY belum dikonfigurasi di server.");
-      return;
-    }
-
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      generationConfig: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: SchemaType.OBJECT,
-          properties: {
-            title: { type: SchemaType.STRING, description: "Judul artikel SEO friendly (H1)" },
-            slug: { type: SchemaType.STRING, description: "URL slug dari judul, huruf kecil dipisah strip" },
-            excerpt: { type: SchemaType.STRING, description: "Ringkasan pendek 2-3 kalimat" },
-            metaTitle: { type: SchemaType.STRING, description: "Meta title optimal maksimal 60 karakter" },
-            metaDesc: { type: SchemaType.STRING, description: "Meta description maksimal 160 karakter untuk CTR tinggi" },
-            content: { type: SchemaType.STRING, description: "Konten lengkap artikel dalam format HTML semantik dengan Tailwind CSS" },
-          },
-          required: ["title", "slug", "excerpt", "metaTitle", "metaDesc", "content"],
+    const model = getGeminiModel({
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: SchemaType.OBJECT,
+        properties: {
+          title: { type: SchemaType.STRING, description: "Judul artikel SEO friendly (H1)" },
+          slug: { type: SchemaType.STRING, description: "URL slug dari judul, huruf kecil dipisah strip" },
+          excerpt: { type: SchemaType.STRING, description: "Ringkasan pendek 2-3 kalimat" },
+          metaTitle: { type: SchemaType.STRING, description: "Meta title optimal maksimal 60 karakter" },
+          metaDesc: { type: SchemaType.STRING, description: "Meta description maksimal 160 karakter untuk CTR tinggi" },
+          content: { type: SchemaType.STRING, description: "Konten lengkap artikel dalam format HTML semantik dengan Tailwind CSS" },
         },
+        required: ["title", "slug", "excerpt", "metaTitle", "metaDesc", "content"],
       },
     });
 

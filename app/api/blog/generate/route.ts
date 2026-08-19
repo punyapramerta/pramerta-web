@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import { SchemaType } from "@google/generative-ai";
+import { getGeminiModel } from "@/lib/gemini";
 
 export async function POST(request: Request) {
   try {
-    if (!process.env.GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is missing in environment variables");
-    }
-
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const body = await request.json();
     const { purpose, audience, keyword, tone, title } = body;
 
@@ -15,22 +11,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Keyword is required" }, { status: 400 });
     }
 
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      generationConfig: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: SchemaType.OBJECT,
-          properties: {
-            title: { type: SchemaType.STRING, description: "Judul artikel SEO friendly (H1)" },
-            slug: { type: SchemaType.STRING, description: "URL slug dari judul, huruf kecil dipisah strip" },
-            excerpt: { type: SchemaType.STRING, description: "Ringkasan pendek 2-3 kalimat" },
-            metaTitle: { type: SchemaType.STRING, description: "Meta title optimal maksimal 60 karakter" },
-            metaDesc: { type: SchemaType.STRING, description: "Meta description maksimal 160 karakter untuk CTR tinggi" },
-            content: { type: SchemaType.STRING, description: "Konten lengkap artikel dalam format HTML (gunakan <h2>, <h3>, <p>, <ul>). Minimal 1000 kata. Harus sangat komprehensif." },
-          },
-          required: ["title", "slug", "excerpt", "metaTitle", "metaDesc", "content"],
+    const model = getGeminiModel({
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: SchemaType.OBJECT,
+        properties: {
+          title: { type: SchemaType.STRING, description: "Judul artikel SEO friendly (H1)" },
+          slug: { type: SchemaType.STRING, description: "URL slug dari judul, huruf kecil dipisah strip" },
+          excerpt: { type: SchemaType.STRING, description: "Ringkasan pendek 2-3 kalimat" },
+          metaTitle: { type: SchemaType.STRING, description: "Meta title optimal maksimal 60 karakter" },
+          metaDesc: { type: SchemaType.STRING, description: "Meta description maksimal 160 karakter untuk CTR tinggi" },
+          content: { type: SchemaType.STRING, description: "Konten lengkap artikel dalam format HTML (gunakan <h2>, <h3>, <p>, <ul>). Minimal 1000 kata. Harus sangat komprehensif." },
         },
+        required: ["title", "slug", "excerpt", "metaTitle", "metaDesc", "content"],
       },
     });
 
